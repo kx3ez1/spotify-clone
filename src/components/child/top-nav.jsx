@@ -1,0 +1,123 @@
+import { useRef } from "react";
+import propTypes from "prop-types";
+import NavBackArrow from "./../../assets/nav-back-arrow.svg";
+
+const TopNav = (props) => {
+  const searchInputRef = useRef(null);
+  const searchMobileRef = useRef(null);
+  const searchMobileClearIconRef = useRef(null);
+
+  return (
+    <div className={`sticky h-14 bg-spotify-black`}>
+      <div className="flex">
+        {/* navigation @laptop */}
+        <div className="md:flex space-x-4 p-6 hidden">
+          <div className="rounded-full w-7 h-7 flex justify-center bg-spotify-black">
+            <div className="self-center w-3 h-3 border-t-2 border-l-2 border-white transform -rotate-45 cursor-pointer flex justify-center"></div>
+          </div>
+          <div className="rounded-full w-7 h-7 flex justify-center bg-spotify-black">
+            <div className="self-center w-3 h-3 border-b-2 border-r-2 border-white transform -rotate-45 cursor-pointer"></div>
+          </div>
+        </div>
+        {/* search input @laptop */}
+        <div
+          className={`md:flex hidden w-96 h-12 justify-center ${
+            props?.showSearch ? "" : "hidden"
+          }`}
+        >
+          <input
+            className="w-full h-full rounded-full"
+            type="text"
+            placeholder="What do you want to listen to?"
+            ref={searchInputRef}
+            onChange={() => props?.searchInput(searchInputRef.current?.value)}
+          />
+        </div>
+        {/*  search input @mobile */}
+        <div className={`md:hidden flex p-Padding8px w-full`}>
+          <img
+            src={NavBackArrow}
+            alt="back arrow"
+            className="w-6 h-6 self-center"
+          />
+          {/* input container */}
+          <div className="flex w-full h-full ml-4">
+            <div className="w-10 h-10 p-0.5 bg-white flex rounded-l-md">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6 self-center m-2 justify-center cursor-pointer"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+            </div>
+            <div className="relative w-full h-full">
+              <input
+                className="w-full h-full pr-10 rounded-r-md outline-none text-sm"
+                ref={searchMobileRef}
+                onChange={() => {
+                  // set input font weight to 600 on input
+                  searchMobileRef.current.style.fontWeight = "600";
+                  
+                  props?.searchInput(searchMobileRef.current?.value);
+                  // show clear icon
+                  searchMobileClearIconRef.current.style.display = "block";
+                  // on empty input hide clear icon
+                  if (!searchMobileRef.current?.value) {
+                    searchMobileClearIconRef.current.style.display = "none";
+                    // set input font weight to 400 on clear
+                    searchMobileRef.current.style.fontWeight = "400";
+                  }
+
+                
+                }}
+                placeholder="What do you want to listen to?"
+              />
+              <svg
+                ref={searchMobileClearIconRef}
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                onClick={(e) => {
+                  props?.searchInput("");
+                  searchMobileRef.current.value = "";
+                  // hide on click
+                  e.target.style.display = "none";
+                  searchMobileRef.current.focus();
+
+                  // set input font weight to 400 on clear
+                  searchMobileRef.current.style.fontWeight = "400";
+                }}
+                className={`w-6 h-6 absolute right-0 top-0 m-2 cursor-pointer select-none ${
+                  searchMobileRef.current?.value ? "" : "hidden"
+                }`}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 6L18 18M6 18L18 6"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+TopNav.propTypes = {
+  showSearch: propTypes.bool,
+  searchInput: propTypes.func,
+};
+
+export default TopNav;
