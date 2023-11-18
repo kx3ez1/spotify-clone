@@ -1,11 +1,17 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import propTypes from "prop-types";
 import NavBackArrow from "./../../assets/nav-back-arrow.svg";
 
 const TopNav = (props) => {
   const searchInputRef = useRef(null);
-  const searchMobileRef = useRef(null);
+  const searchMobileInputRef = useRef(null);
   const searchMobileClearIconRef = useRef(null);
+
+  useEffect(() => {
+    if(searchMobileInputRef.current.value.length === 0){
+      searchMobileClearIconRef.current.style.display = "none";
+    }
+  }, [searchMobileInputRef.current?.value]);
 
   return (
     <div className={`sticky h-14 bg-spotify-black`}>
@@ -42,7 +48,12 @@ const TopNav = (props) => {
           />
           {/* input container */}
           <div className="flex w-full h-full ml-4">
-            <div className="w-10 h-10 p-0.5 bg-white flex rounded-l-md">
+            {/* search icon container */}
+            <div className="w-10 h-10 p-0.5 bg-white flex rounded-l-md"
+              onClick={() => {
+                searchMobileInputRef.current.focus();
+              }}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -61,22 +72,23 @@ const TopNav = (props) => {
             <div className="relative w-full h-full">
               <input
                 className="w-full h-full pr-10 rounded-r-md outline-none text-sm"
-                ref={searchMobileRef}
+                ref={searchMobileInputRef}
                 onChange={() => {
                   // set input font weight to 600 on input
-                  searchMobileRef.current.style.fontWeight = "600";
+                  searchMobileInputRef.current.style.fontWeight = "600";
                   
-                  props?.searchInput(searchMobileRef.current?.value);
+                  props?.searchInput(searchMobileInputRef.current?.value);
                   // show clear icon
-                  searchMobileClearIconRef.current.style.display = "block";
+                  // searchMobileClearIconRef.current.style.display = "block";
                   // on empty input hide clear icon
-                  if (!searchMobileRef.current?.value) {
+                  if (searchMobileInputRef.current?.value.length === 0) {
                     searchMobileClearIconRef.current.style.display = "none";
                     // set input font weight to 400 on clear
-                    searchMobileRef.current.style.fontWeight = "400";
-                  }
-
-                
+                    searchMobileInputRef.current.style.fontWeight = "400";
+                  }else{
+                    // show clear icon
+                    searchMobileClearIconRef.current.style.display = "block";
+                  }                
                 }}
                 placeholder="What do you want to listen to?"
               />
@@ -88,18 +100,16 @@ const TopNav = (props) => {
                 strokeWidth="1.5"
                 stroke="currentColor"
                 onClick={(e) => {
+                  // clear search input --> clear search results
                   props?.searchInput("");
-                  searchMobileRef.current.value = "";
+                  searchMobileInputRef.current.value = "";
                   // hide on click
                   e.target.style.display = "none";
-                  searchMobileRef.current.focus();
-
+                  searchMobileInputRef.current.focus();
                   // set input font weight to 400 on clear
-                  searchMobileRef.current.style.fontWeight = "400";
+                  searchMobileInputRef.current.style.fontWeight = "400";
                 }}
-                className={`w-6 h-6 absolute right-0 top-0 m-2 cursor-pointer select-none ${
-                  searchMobileRef.current?.value ? "" : "hidden"
-                }`}
+                className={`w-6 h-6 absolute right-0 top-0 m-2 cursor-pointer select-none hidden`}
               >
                 <path
                   strokeLinecap="round"
