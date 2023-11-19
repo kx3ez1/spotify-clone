@@ -14,7 +14,7 @@ const TopNav = (props) => {
   }, [searchMobileInputRef.current?.value]);
 
   return (
-    <div className={`sticky h-14 bg-spotify-black`}>
+    <div className={`h-14 bg-spotify-black`}>
       <div className="flex">
         {/* navigation @laptop */}
         <div className="md:flex space-x-4 p-6 hidden">

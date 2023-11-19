@@ -1,0 +1,80 @@
+/* 
+CircularSpotifyText-Black.otf
+CircularSpotifyText-BlackItalic.otf
+CircularSpotifyText-Bold.otf
+CircularSpotifyText-Book.otf
+CircularSpotifyText-BookItalic.otf
+CircularSpotifyText-Light.otf
+CircularSpotifyText-Medium.otf
+CircularSpotifyText-MediumItalic.otf
+*/
+
+
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-Black.otf") format("opentype");
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-BlackItalic.otf") format("opentype");
+    font-weight: 900;
+    font-style: italic;
+}
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-Bold.otf") format("opentype");
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-Book.otf") format("opentype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-BookItalic.otf") format("opentype");
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-Light.otf") format("opentype");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-Medium.otf") format("opentype");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: "CircularSpotifyText";
+  src: url("assets/fonts/circular-spotify-text-font/CircularSpotifyText-MediumItalic.otf") format("opentype");
+    font-weight: 500;
+    font-style: italic;
+}
+
+
+
+body {
+  font-family: "CircularSpotifyText", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

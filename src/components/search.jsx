@@ -42,8 +42,8 @@ function SearchComponent() {
         </div>
       </div>
 
-      <div className="w-full pl-2">
-        <div className="bg-spotify-darkGray rounded-lg w-full h-full">
+      <div className="w-full h-full pl-2">
+        <div className="rounded-lg w-full h-full overflow-y-scroll">
           {/* search input field*/}
           <TopNav showSearch={true} searchInput={handleSearchInputChange} />
 
@@ -66,12 +66,13 @@ function SearchComponent() {
             ))}
           </div>
 
-          <div className="overflow-y-scroll">
+          <div className="h-full w-full">
             {/* search results*/}
             {state.searchResults["results"].map((result,index) => (
               <SearchTile key={result.id} result={result} index={index} />
             ))}
           </div>
+          
         </div>
       </div>
     </div>
