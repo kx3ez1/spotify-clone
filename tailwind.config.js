@@ -12,6 +12,7 @@ export default {
           gray: "#535353",
           lightGray: "#B3B3B3",
           darkGray: "#282828",
+
         },
       },
       // spotify common padding

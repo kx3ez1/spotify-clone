@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import propTypes from "prop-types";
 import NavBackArrow from "./../../assets/nav-back-arrow.svg";
+import FixedBottomPlayer from "./player.jsx";
 
 const TopNav = (props) => {
   const searchInputRef = useRef(null);

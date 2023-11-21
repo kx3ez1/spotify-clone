@@ -1,3 +1,4 @@
+
 const NotFoundComponent = () => {
   return (
     <div>
