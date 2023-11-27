@@ -1,11 +1,19 @@
-import PropTypes from "prop-types";
 import { capitalize } from "../utils";
+import {useDispatch, useSelector} from "react-redux";
+import {fetchFinalPlayUrl, setCurrentSong} from "../../../reducers/player";
+import PropTypes from "prop-types";
 
 const SearchTile = ({ result }) => {
   const replacedTitle = result?.title.replace(/&quot;/g, '"');
+    const dispatch = useDispatch();
 
   return (
-    <div className="flex py-Padding8px">
+    <div className="flex py-Padding8px" onClick={
+        async () => {
+          dispatch(setCurrentSong(result));
+          dispatch(fetchFinalPlayUrl(result?.more_info?.encrypted_media_url));
+        }
+    }>
       {/* <p className="text-spotify-white">{index + 1}</p> */}
       <img src={result?.image} alt={replacedTitle} className="w-14 h-14 rounded-md" />
       <MakeSearchTileDesc

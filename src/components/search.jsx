@@ -74,7 +74,6 @@ function SearchComponent() {
                             <SearchTile key={result.id} result={result} index={index}/>
                         ))}
                     </div>
-
                 </div>
             </div>
         </div>
