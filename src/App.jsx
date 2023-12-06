@@ -1,9 +1,12 @@
 import "./App.css";
 import CustomRoutes from "./app/routes";
+import { AudioProvider } from "./app/audioContext";
 
 function App() {
   return (
-    <CustomRoutes />
+    <AudioProvider>
+      <CustomRoutes />
+    </AudioProvider>
   );
 }
 
