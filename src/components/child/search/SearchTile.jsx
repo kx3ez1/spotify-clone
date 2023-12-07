@@ -1,5 +1,5 @@
 import { capitalize } from "../utils";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {fetchFinalPlayUrl, setCurrentSong} from "../../../reducers/player";
 import PropTypes from "prop-types";
 

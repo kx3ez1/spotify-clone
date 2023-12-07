@@ -1,18 +1,23 @@
 import { useEffect, useRef } from "react";
 import propTypes from "prop-types";
 import NavBackArrow from "./../../assets/nav-back-arrow.svg";
-import FixedBottomPlayer from "./player.jsx";
+import { useSelector } from "react-redux";
 
 const TopNav = (props) => {
   const searchInputRef = useRef(null);
   const searchMobileInputRef = useRef(null);
   const searchMobileClearIconRef = useRef(null);
+  const searchQuery = useSelector((state) => state.search.query);
 
   useEffect(() => {
-    if(searchMobileInputRef.current.value.length === 0){
+    if (searchQuery) {
+      searchMobileInputRef.current.value = searchQuery;
+      searchInputRef.current.value = searchQuery;
+    }
+    if (searchMobileInputRef.current.value.length === 0) {
       searchMobileClearIconRef.current.style.display = "none";
     }
-  }, [searchMobileInputRef.current?.value]);
+  }, [searchQuery]);
 
   return (
     <div className={`h-14 bg-spotify-black`}>
@@ -50,7 +55,8 @@ const TopNav = (props) => {
           {/* input container */}
           <div className="flex w-full h-full ml-4">
             {/* search icon container */}
-            <div className="w-10 h-10 p-0.5 bg-white flex rounded-l-md"
+            <div
+              className="w-10 h-10 p-0.5 bg-white flex rounded-l-md"
               onClick={() => {
                 searchMobileInputRef.current.focus();
               }}
@@ -77,7 +83,7 @@ const TopNav = (props) => {
                 onChange={() => {
                   // set input font weight to 600 on input
                   searchMobileInputRef.current.style.fontWeight = "600";
-                  
+
                   props?.searchInput(searchMobileInputRef.current?.value);
                   // show clear icon
                   // searchMobileClearIconRef.current.style.display = "block";
@@ -86,10 +92,10 @@ const TopNav = (props) => {
                     searchMobileClearIconRef.current.style.display = "none";
                     // set input font weight to 400 on clear
                     searchMobileInputRef.current.style.fontWeight = "400";
-                  }else{
+                  } else {
                     // show clear icon
                     searchMobileClearIconRef.current.style.display = "block";
-                  }                
+                  }
                 }}
                 placeholder="What do you want to listen to?"
               />
