@@ -2,11 +2,21 @@ import { useEffect } from "react";
 import NavMenu from "./child/nav-menu.jsx";
 import LibraryComponent from "./child/library.jsx";
 import TopNav from "./child/top-nav.jsx";
-import { fetchSearch } from "../reducers/search.jsx";
+import {
+  fetchSearchSongs,
+  fetchSearchAlbums,
+  fetchSearchArtists,
+  fetchSearchPlaylists,
+} from "../reducers/searchRequests.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import * as searchReducer from "../reducers/search.jsx";
 import { capitalize } from "./child/utils.jsx";
-import { SearchTile } from "./child/search/SearchTile.jsx";
+import {
+  SearchAlbumTile,
+  SearchArtistTile,
+  SearchPlaylistTile,
+  SearchSongTile,
+} from "./child/search/SearchTile.jsx";
 import FixedBottomPlayer from "./child/player.jsx";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -41,9 +51,18 @@ function SearchComponent() {
 
     if (searchType) {
       dispatch(searchReducer.setSearchType(searchType));
-    }
 
-    dispatch(fetchSearch(query));
+      // fetch search results
+      if (searchType === "tracks") {
+        dispatch(fetchSearchSongs(query));
+      } else if (searchType === "artists") {
+        dispatch(fetchSearchArtists(query));
+      } else if (searchType === "albums") {
+        dispatch(fetchSearchAlbums(query));
+      } else if (searchType === "playlists") {
+        dispatch(fetchSearchPlaylists(query));
+      }
+    }
   }, [dispatch, query, searchType]);
 
   return (
@@ -93,10 +112,57 @@ function SearchComponent() {
           </div>
 
           <div className="h-full w-full">
-            {/* search results*/}
-            {state.searchResults["results"].map((result, index) => (
-              <SearchTile key={result.id} result={result} index={index} />
-            ))}
+            {/* search results - songs*/}
+            {tagList &&
+              tagList[0].active &&
+              state.searchResults.songs &&
+              state.searchResults.songs["results"] &&
+              state.searchResults.songs["results"].length > 0 &&
+              state.searchResults.songs["results"].map((result, index) => (
+                <SearchSongTile key={result.id} result={result} index={index} />
+              ))}
+
+            {/* search results - artists*/}
+            {tagList &&
+              tagList[1].active &&
+              state.searchResults.artists &&
+              state.searchResults.artists["results"] &&
+              state.searchResults.artists["results"].length > 0 &&
+              state.searchResults.artists["results"].map((result, index) => (
+                <SearchArtistTile
+                  key={result.id}
+                  result={result}
+                  index={index}
+                />
+              ))}
+
+            {/* search results - albums*/}
+            {tagList &&
+              tagList[2].active &&
+              state.searchResults.albums &&
+              state.searchResults.albums["results"] &&
+              state.searchResults.albums["results"].length > 0 &&
+              state.searchResults.albums["results"].map((result, index) => (
+                <SearchAlbumTile
+                  key={result.id}
+                  result={result}
+                  index={index}
+                />
+              ))}
+
+            {/* search results - playlists*/}
+            {tagList &&
+              tagList[3].active &&
+              state.searchResults.playlists &&
+              state.searchResults.playlists["results"] &&
+              state.searchResults.playlists["results"].length > 0 &&
+              state.searchResults.playlists["results"].map((result, index) => (
+                <SearchPlaylistTile
+                  key={result.id}
+                  result={result}
+                  index={index}
+                />
+              ))}
           </div>
         </div>
       </div>
