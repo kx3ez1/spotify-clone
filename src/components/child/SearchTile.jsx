@@ -1,17 +1,19 @@
-import { capitalize } from "../utils";
+import { capitalize, parseSanitizedHTML } from "./utils";
 import { useDispatch } from "react-redux";
-import { fetchFinalPlayUrl, setCurrentSong } from "../../../reducers/player";
+import { fetchFinalPlayUrl, setCurrentSong, setIsPlaying } from "../../reducers/player";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const SearchSongTile = ({ result }) => {
-  const replacedTitle = result?.title.replace(/&quot;/g, '"');
+  const replacedTitle = parseSanitizedHTML(result?.title)
   const dispatch = useDispatch();
 
   return (
     <div
-      className="flex py-Padding8px"
+      className="flex py-Padding8px cursor-pointer"
       onClick={async () => {
         dispatch(setCurrentSong(result));
+        dispatch(setIsPlaying(true));
         dispatch(fetchFinalPlayUrl(result?.more_info?.encrypted_media_url));
       }}
     >
@@ -37,7 +39,7 @@ const MakeSearchTileDesc = ({ result, replacedTitle }) => {
     <div className="ml-4">
       <div className="text-spotify-white">{replacedTitle}</div>
       <div className="text-spotify-gray">
-        {capitalize(result?.type)} •{result?.more_info?.album}
+        {capitalize(result?.type)} •{parseSanitizedHTML(result?.more_info?.album)}
       </div>
     </div>
   );
@@ -65,15 +67,15 @@ SearchAlbumTileDescription.propTypes = {
 };
 
 const SearchAlbumTile = ({ result }) => {
-  const replacedTitle = result?.title.replace(/&quot;/g, '"');
+  const replacedTitle = parseSanitizedHTML(result?.title)
   // const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <div
       className="flex py-Padding8px"
       onClick={async () => {
-        // dispatch(setCurrentSong(result));
-        // dispatch(fetchFinalPlayUrl(result?.more_info?.encrypted_media_url));
+        navigate(`/album/${result?.id}`);
       }}
     >
       {/* <p className="text-spotify-white">{index + 1}</p> */}
@@ -113,13 +115,24 @@ SearchTileDescriptionArtist.propTypes = {
 };
 
 const SearchArtistTile = ({ result }) => {
-  const replacedTitle = result?.name.replace(/&quot;/g, '"');
+  const replacedTitle = parseSanitizedHTML(result?.name)
   // const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const extractArtistToken = (result) => {
+    let artistToken = "";
+    let artistUrlSplit = result?.perma_url.split("/");
+    // get last element of array
+    artistToken = artistUrlSplit[artistUrlSplit.length - 1];
+    return artistToken;
+  };
 
   return (
     <div
       className="flex py-Padding8px"
       onClick={async () => {
+        navigate(`/artist/${extractArtistToken(result)}`);
+
         // dispatch(setCurrentSong(result));
         // dispatch(fetchFinalPlayUrl(result?.more_info?.encrypted_media_url));
       }}
@@ -161,13 +174,15 @@ SearchPlaylistTileDescription.propTypes = {
 };
 
 const SearchPlaylistTile = ({ result }) => {
-  const replacedTitle = result?.title.replace(/&quot;/g, '"');
+  const replacedTitle = parseSanitizedHTML(result?.title)
   // const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <div
       className="flex py-Padding8px"
       onClick={async () => {
+        navigate(`/playlist/${result?.id}`);
         // dispatch(setCurrentSong(result));
         // dispatch(fetchFinalPlayUrl(result?.more_info?.encrypted_media_url));
       }}

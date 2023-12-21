@@ -16,7 +16,7 @@ import {
   SearchArtistTile,
   SearchPlaylistTile,
   SearchSongTile,
-} from "./child/search/SearchTile.jsx";
+} from "./child/SearchTile.jsx";
 import FixedBottomPlayer from "./child/player.jsx";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -100,11 +100,10 @@ function SearchComponent() {
                 }}
                 className={`
                 md:cursor-pointer
-                 rounded-full px-2 py-1 ${
-                   tag.active
-                     ? "bg-spotify-white text-spotify-black"
-                     : "bg-opacity-25 bg-spotify-gray hover:bg-opacity-50 text-spotify-white"
-                 }`}
+                 rounded-full px-2 py-1 ${tag.active
+                    ? "bg-spotify-white text-spotify-black"
+                    : "bg-opacity-25 bg-spotify-gray hover:bg-opacity-50 text-spotify-white"
+                  }`}
               >
                 {capitalize(tag.name)}
               </div>

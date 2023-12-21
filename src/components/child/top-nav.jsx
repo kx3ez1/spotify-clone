@@ -33,9 +33,8 @@ const TopNav = (props) => {
         </div>
         {/* search input @laptop */}
         <div
-          className={`md:flex hidden w-96 h-12 justify-center ${
-            props?.showSearch ? "" : "hidden"
-          }`}
+          className={`md:flex hidden w-96 h-12 justify-center ${props?.showSearch ? "" : "hidden"
+            }`}
         >
           <input
             className="w-full h-full rounded-full"
@@ -47,7 +46,12 @@ const TopNav = (props) => {
         </div>
         {/*  search input @mobile */}
         <div className={`md:hidden flex p-Padding8px w-full`}>
+          {/* back arrow */}
           <img
+            onClick={() => {
+              // go back to home page
+              window.history.back();
+            }}
             src={NavBackArrow}
             alt="back arrow"
             className="w-6 h-6 self-center"

@@ -1,11 +1,12 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {SERVER_ADDRESS} from "../app/constants.jsx";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { SERVER_ADDRESS } from "../app/constants.jsx";
 
 
 const fetchFinalPlayUrl = createAsyncThunk(
     "player/fetchFinalSongUrl",
     async (songId) => {
-        console.log("fetchFinalPlayUrl: " + songId);
+        // console.log("fetchFinalPlayUrl: " + songId);
+        // double encoding is must
         songId = encodeURIComponent(songId)
         songId = encodeURIComponent(songId)
         const response = await fetch(SERVER_ADDRESS + "/search/d?id=" + songId)
@@ -23,6 +24,7 @@ const playerSlice = createSlice({
         isMuted: false,
         isRepeat: false,
         isShuffle: false,
+        readyState: 0, // 0 = HAVE_NOTHING, 1 = HAVE_METADATA, 2 = HAVE_CURRENT_DATA, 3 = HAVE_FUTURE_DATA, 4 = HAVE_ENOUGH_DATA
         currentTime: 0,
         duration: 0,
         queue: [],
@@ -55,15 +57,18 @@ const playerSlice = createSlice({
         setDuration: (state, action) => {
             state.duration = action.payload;
         },
+        setReadyState: (state, action) => {
+            state.readyState = action.payload;
+        },
     },
     extraReducers: {
         [fetchFinalPlayUrl.fulfilled]: (state, action) => {
             state.currentSong.playUrl = action.payload?.url;
         },
-        [fetchFinalPlayUrl.rejected]: (state, action) => {
+        [fetchFinalPlayUrl.rejected]: (state) => {
             state.isUrlError = true;
         },
-        [fetchFinalPlayUrl.pending]: (state, action) => {
+        [fetchFinalPlayUrl.pending]: (state) => {
             state.isLoaded = false;
         }
     }
@@ -79,8 +84,9 @@ export const {
     setIsShuffle,
     setCurrentTime,
     setDuration,
+    setReadyState,
 } = playerSlice.actions;
 
-export {fetchFinalPlayUrl};
+export { fetchFinalPlayUrl };
 
 export default playerSlice.reducer;

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { capitalize } from "./utils.jsx";
+import { useState, useEffect } from "react";
+import { capitalize, parseSanitizedHTML } from "./utils.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useAudio } from "../../app/audioContext.jsx";
 import { setIsPlaying } from "../../reducers/player.jsx";
@@ -9,7 +9,6 @@ const FixedBottomPlayer = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const playerControl = useSelector((state) => state.player);
   const isPlaying = useSelector((state) => state.player.isPlaying);
-  const currentSong = useSelector((state) => state.player.currentSong);
   const currentPlayingSong = {
     title: playerControl?.currentSong?.title,
     sub_title: playerControl?.currentSong?.more_info?.album,
@@ -36,12 +35,29 @@ const FixedBottomPlayer = () => {
     return url;
   };
 
+
+  useEffect(() => {
+    if (isFullScreen) {
+      // on keyboard space to pause/play
+      const handleKeyPress = (e) => {
+        if (e.code === "Space") {
+          dispatch(setIsPlaying(!isPlaying))
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyPress);
+
+      return () => {
+        window.removeEventListener("keydown", handleKeyPress);
+      };
+    }
+  }, [dispatch, isFullScreen, isPlaying]);
+
   return (
     currentPlayingSong?.title && (
       <div
-        className={`fixed bottom-0 left-0 z-50 transition-all duration-150 ease-in-out ${
-          isFullScreen ? "w-screen h-screen" : "w-full h-16"
-        }`}
+        className={`fixed bottom-0 left-0 z-50 transition-all duration-150 ease-in-out ${isFullScreen ? "w-screen h-screen" : "w-full h-16"
+          }`}
       >
         {!isFullScreen && (
           <div
@@ -49,8 +65,8 @@ const FixedBottomPlayer = () => {
             onClick={toggleFullScreen}
           >
             <div className="flex flex-col">
-              <div className="p-1.5 flex justify-between items-center">
-                <div>
+              <div className="w-full p-1.5 flex items-center">
+                <div className="flex-none">
                   {/* album image */}
                   <img
                     className="h-10 w-10 rounded-md"
@@ -58,16 +74,68 @@ const FixedBottomPlayer = () => {
                     src={currentPlayingSong?.image}
                   />
                 </div>
-                <div>
+                <div className="grow">
                   {/* album name */}
-                  <div className="text-spotify-white text-xs">
-                    {capitalize(currentPlayingSong?.title)}
+                  <div className="pl-Padding8px text-spotify-white font-semibold text-xs ">
+                    {parseSanitizedHTML(capitalize(currentPlayingSong?.title))}
+                  </div>
+                </div>
+                <div className="text-spotify-white flex">
+                  {/* heart symbol or Like */}
+                  <div className="w-10 h-10 p-Padding8px"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <svg
+                      fill={"currentColor"}
+                      data-encore-id="icon"
+                      role="img"
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M5.21 1.57a6.757 6.757 0 0 1 6.708 1.545.124.124 0 0 0 .165 0 6.741 6.741 0 0 1 5.715-1.78l.004.001a6.802 6.802 0 0 1 5.571 5.376v.003a6.689 6.689 0 0 1-1.49 5.655l-7.954 9.48a2.518 2.518 0 0 1-3.857 0L2.12 12.37A6.683 6.683 0 0 1 .627 6.714 6.757 6.757 0 0 1 5.21 1.57zm3.12 1.803a4.757 4.757 0 0 0-5.74 3.725l-.001.002a4.684 4.684 0 0 0 1.049 3.969l.009.01 7.958 9.485a.518.518 0 0 0 .79 0l7.968-9.495a4.688 4.688 0 0 0 1.049-3.965 4.803 4.803 0 0 0-3.931-3.794 4.74 4.74 0 0 0-4.023 1.256l-.008.008a2.123 2.123 0 0 1-2.9 0l-.007-.007a4.757 4.757 0 0 0-2.214-1.194z"></path>
+                    </svg>
+                  </div>
+                  <div
+                    className="ml-2 w-10 h-10 p-Padding8px"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      dispatch(setIsPlaying(!isPlaying))
+                    }}
+                  >
+                    {/*  play or pause button */}
+                    <div className="text-spotify-white">
+                      {!isPlaying ? (
+                        //  play button
+                        <svg
+                          fill={"currentColor"}
+                          data-encore-id="icon"
+                          role="img"
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path>
+                        </svg>
+                      ) : (
+                        // pause button
+                        <svg
+                          fill={"currentColor"}
+                          data-encore-id="icon"
+                          role="img"
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
+                        </svg>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
               {/*    progress bar*/}
               <div>
-                <MakeAudioPlayerV2 currentPlayingSong={currentPlayingSong} />
+                <MiniPlayerProgressBar currentPlayingSong={currentPlayingSong} />
               </div>
             </div>
           </div>
@@ -77,7 +145,7 @@ const FixedBottomPlayer = () => {
             <div className="flex flex-col p-3">
               <div className="mb-10 flex justify-between w-full">
                 {/* minimize player button*/}
-                <div className="p-3" onClick={toggleFullScreen}>
+                <div className="p-3 cursor-pointer" onClick={toggleFullScreen}>
                   <div className="w-6 h-6">
                     <svg
                       data-encore-id="icon"
@@ -92,11 +160,11 @@ const FixedBottomPlayer = () => {
                 </div>
                 {/* album name */}
                 <div
-                  className="text-xs w-3/4 text-center flex items-center"
+                  className="text-xs w-3/4 text-center flex items-center cursor-pointer"
                   onClick={toggleFullScreen}
                 >
                   <div className="w-full overflow-hidden text-spotify-white whitespace-nowrap overflow-ellipsis">
-                    {capitalize(currentPlayingSong?.sub_title)}
+                    {parseSanitizedHTML(capitalize(currentPlayingSong?.sub_title))}
                   </div>
                 </div>
                 <div className="p-3">
@@ -107,7 +175,7 @@ const FixedBottomPlayer = () => {
                       aria-hidden="true"
                       viewBox="0 0 24 24"
                       fill={"white"}
-                      className="Svg-sc-ytk21e-0 iYxpxA"
+
                     >
                       <path d="M4.5 13.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm15 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-7.5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
                     </svg>
@@ -126,9 +194,12 @@ const FixedBottomPlayer = () => {
               <div className="mx-3 mb-4 flex justify-between">
                 <div className="w-full flex flex-col">
                   <div className="text-2xl text-spotify-white font-semibold">
-                    {capitalize(currentPlayingSong?.title)}
+                    {parseSanitizedHTML(capitalize(currentPlayingSong?.title))}
                   </div>
-                  <div>{capitalize(currentPlayingSong?.sub_title)}</div>
+                  {/* sub title into ellipsis and capitalize */}
+                  <div className="text-lg text-spotify-black overflow-hidden whitespace-nowrap overflow-ellipsis">
+                    {parseSanitizedHTML(capitalize(currentPlayingSong?.sub_title))}
+                  </div>
                 </div>
                 {/* like button --> heart symbol */}
                 <div className="w-12 h-12 p-1 flex items-center justify-center text-spotify-white">
@@ -140,7 +211,6 @@ const FixedBottomPlayer = () => {
                     fill={"currentColor"}
                     width="24"
                     height="24"
-                    className="Svg-sc-ytk21e-0 iYxpxA"
                   >
                     <path d="M5.21 1.57a6.757 6.757 0 0 1 6.708 1.545.124.124 0 0 0 .165 0 6.741 6.741 0 0 1 5.715-1.78l.004.001a6.802 6.802 0 0 1 5.571 5.376v.003a6.689 6.689 0 0 1-1.49 5.655l-7.954 9.48a2.518 2.518 0 0 1-3.857 0L2.12 12.37A6.683 6.683 0 0 1 .627 6.714 6.757 6.757 0 0 1 5.21 1.57zm3.12 1.803a4.757 4.757 0 0 0-5.74 3.725l-.001.002a4.684 4.684 0 0 0 1.049 3.969l.009.01 7.958 9.485a.518.518 0 0 0 .79 0l7.968-9.495a4.688 4.688 0 0 0 1.049-3.965 4.803 4.803 0 0 0-3.931-3.794 4.74 4.74 0 0 0-4.023 1.256l-.008.008a2.123 2.123 0 0 1-2.9 0l-.007-.007a4.757 4.757 0 0 0-2.214-1.194z"></path>
                   </svg>
@@ -148,7 +218,7 @@ const FixedBottomPlayer = () => {
               </div>
               {/* progress bar*/}
               {/*<MakeAudioPlayer currentPlayingSong={currentPlayingSong}/>*/}
-              <MakeAudioPlayerV2 currentPlayingSong={currentPlayingSong} />
+              <ProgressBarFullScreenPlayer currentPlayingSong={currentPlayingSong} />
               {/* player controls  */}
               {/*-----starts here---------*/}
               <div className="flex justify-between items-center">
@@ -160,7 +230,6 @@ const FixedBottomPlayer = () => {
                     aria-hidden="true"
                     viewBox="0 0 24 24"
                     fill={"currentColor"}
-                    className="Svg-sc-ytk21e-0 iYxpxA"
                   >
                     <path d="M18.788 3.702a1 1 0 0 1 1.414-1.414L23.914 6l-3.712 3.712a1 1 0 1 1-1.414-1.414L20.086 7h-1.518a5 5 0 0 0-3.826 1.78l-7.346 8.73a7 7 0 0 1-5.356 2.494H1v-2h1.04a5 5 0 0 0 3.826-1.781l7.345-8.73A7 7 0 0 1 18.569 5h1.518l-1.298-1.298z"></path>
                     <path d="M18.788 14.289a1 1 0 0 0 0 1.414L20.086 17h-1.518a5 5 0 0 1-3.826-1.78l-1.403-1.668-1.306 1.554 1.178 1.4A7 7 0 0 0 18.568 19h1.518l-1.298 1.298a1 1 0 1 0 1.414 1.414L23.914 18l-3.712-3.713a1 1 0 0 0-1.414 0zM7.396 6.49l2.023 2.404-1.307 1.553-2.246-2.67a5 5 0 0 0-3.826-1.78H1v-2h1.04A7 7 0 0 1 7.396 6.49z"></path>
@@ -174,7 +243,6 @@ const FixedBottomPlayer = () => {
                     aria-hidden="true"
                     viewBox="0 0 24 24"
                     fill={"currentColor"}
-                    className="Svg-sc-ytk21e-0 iaCPPY"
                   >
                     <path d="M6.3 3a.7.7 0 0 1 .7.7v6.805l11.95-6.899a.7.7 0 0 1 1.05.606v15.576a.7.7 0 0 1-1.05.606L7 13.495V20.3a.7.7 0 0 1-.7.7H4.7a.7.7 0 0 1-.7-.7V3.7a.7.7 0 0 1 .7-.7h1.6z"></path>
                   </svg>
@@ -191,7 +259,6 @@ const FixedBottomPlayer = () => {
                         role="img"
                         aria-hidden="true"
                         viewBox="0 0 24 24"
-                        className="Svg-sc-ytk21e-0 iYxpxA"
                       >
                         <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path>
                       </svg>
@@ -202,7 +269,6 @@ const FixedBottomPlayer = () => {
                         role="img"
                         aria-hidden="true"
                         viewBox="0 0 24 24"
-                        className="Svg-sc-ytk21e-0 iYxpxA"
                       >
                         <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
                       </svg>
@@ -217,7 +283,6 @@ const FixedBottomPlayer = () => {
                     aria-hidden="true"
                     viewBox="0 0 24 24"
                     fill={"currentColor"}
-                    className="Svg-sc-ytk21e-0 iaCPPY"
                   >
                     <path d="M17.7 3a.7.7 0 0 0-.7.7v6.805L5.05 3.606A.7.7 0 0 0 4 4.212v15.576a.7.7 0 0 0 1.05.606L17 13.495V20.3a.7.7 0 0 0 .7.7h1.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-1.6z"></path>
                   </svg>
@@ -230,7 +295,6 @@ const FixedBottomPlayer = () => {
                     aria-hidden="true"
                     viewBox="0 0 24 24"
                     fill={"currentColor"}
-                    className="Svg-sc-ytk21e-0 iYxpxA"
                   >
                     <path d="M6 2a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h1v-2H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-4.798l1.298-1.298a1 1 0 1 0-1.414-1.414L9.373 19l3.713 3.712a1 1 0 0 0 1.414-1.414L13.202 20H18a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5H6z"></path>
                   </svg>
@@ -261,22 +325,60 @@ const FixedBottomPlayer = () => {
   );
 };
 
-const MakeAudioPlayerV2 = ({ currentPlayingSong }) => {
+const ProgressBarFullScreenPlayer = () => {
   const { handleRangeChange, currentTime, duration } = useAudio();
 
+
+
+  const formatTime = (time) => {
+    if (isNaN(time)) {
+      return "00:00";
+    }
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+
+    return `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+  };
+
   return (
-    <div>
+    <div className="pb-Padding8px">
       <input
+        id="fullScreenProgressBar"
         type="range"
         min="0"
         max={duration}
         value={currentTime}
         onChange={handleRangeChange}
-        className="transparent h-1.5 w-full cursor-pointer appearance-none rounded-lg border-transparent"
+        className="transparent h-1 w-full cursor-pointer appearance-none rounded-sm border-transparent"
         style={{
-          background: `linear-gradient(to right, #82CFD0 0%, #82CFD0 ${
-            (currentTime / duration) * 100
-          }%, #fff ${(currentTime / duration) * 100}%, white 100%)`,
+          background: `linear-gradient(to right, #fff 0%, #fff ${(currentTime / duration) * 100
+            }%, #6C7171 ${(currentTime / duration) * 100}%, #6C7171 100%)`,
+          WebkitAppearance: "none" /* Override default CSS styles */,
+        }}
+      />
+      <div className="flex justify-between items-center">
+        <div className="text-spotify-white text-xs">{formatTime(currentTime)}</div>
+        <div className="text-spotify-white text-xs">{formatTime(duration)}</div>
+      </div>
+    </div>
+  );
+};
+
+const MiniPlayerProgressBar = () => {
+  const { currentTime, duration } = useAudio();
+
+  return (
+    <div className="mx-1">
+      <div
+        // type="range"
+        min="0"
+        max={duration}
+        value={currentTime}
+        className="transparent h-0.5 w-full appearance-none rounded-lg border-transparent"
+        // scroll bar color - #82CFD0
+        style={{
+          background: `linear-gradient(to right, #82CFD0 0%, #82CFD0 ${(currentTime / duration) * 100
+            }%, #fff ${(currentTime / duration) * 100}%, white 100%)`,
         }}
       />
     </div>

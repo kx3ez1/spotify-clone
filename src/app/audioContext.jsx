@@ -5,6 +5,7 @@ import {
   setIsPlaying,
   setDuration,
   setCurrentTime,
+  setReadyState,
 } from "./../reducers/player";
 
 const AudioContext = createContext();
@@ -15,16 +16,26 @@ export const AudioProvider = ({ children }) => {
   const currentTime = useSelector((state) => state.player.currentTime);
   const audioRef = useRef(new Audio());
   const currentSong = useSelector((state) => state.player.currentSong);
+  const readyState = useSelector((state) => state.player.readyState);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const audioInstance = audioRef.current;
     const playUrl = currentSong?.playUrl;
 
+    // update readyState
+    if (audioInstance.readyState !== readyState) {
+      dispatch(setReadyState(audioInstance.readyState));
+    }
+
     if (playUrl) {
-      audioInstance.src = playUrl;
+      if (audioInstance.src !== playUrl) {
+        audioInstance.src = playUrl;
+      }
       if (isPlaying) {
         audioInstance.play();
+      } else {
+        audioInstance.pause();
       }
 
       const handleTimeUpdate = () => {
@@ -58,7 +69,7 @@ export const AudioProvider = ({ children }) => {
         );
       };
     }
-  }, [isPlaying, dispatch, currentSong?.playUrl]);
+  }, [isPlaying, dispatch, currentSong?.playUrl, readyState]);
 
   const togglePlay = () => {
     dispatch(
@@ -90,6 +101,7 @@ export const AudioProvider = ({ children }) => {
         audioRef,
         duration,
         currentTime,
+        readyState,
         togglePlay,
         handleRangeChange,
       }}
