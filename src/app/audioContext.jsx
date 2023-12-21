@@ -6,7 +6,11 @@ import {
   setDuration,
   setCurrentTime,
   setReadyState,
+  setCurrentSong,
+  setQueue,
 } from "./../reducers/player";
+
+import { fetchFinalPlayUrl } from "./../reducers/player";
 
 const AudioContext = createContext();
 
@@ -18,6 +22,8 @@ export const AudioProvider = ({ children }) => {
   const currentSong = useSelector((state) => state.player.currentSong);
   const readyState = useSelector((state) => state.player.readyState);
   const dispatch = useDispatch();
+
+  const queue = useSelector((state) => state.player.queue);
 
   useEffect(() => {
     const audioInstance = audioRef.current;
@@ -46,6 +52,19 @@ export const AudioProvider = ({ children }) => {
         dispatch(setDuration(audioInstance.duration));
       };
 
+      const handleEnded = () => {
+        // dispatch(setIsPlaying(false));
+        if (queue.length === 0) {
+          return;
+        }
+        // dispatch(setDuration(0));
+        // dispatch(setCurrentTime(0));
+        dispatch(setCurrentSong(queue[0]));
+        dispatch(fetchFinalPlayUrl(queue[0]?.more_info?.encrypted_media_url));
+        dispatch(setIsPlaying(true));
+        dispatch(setQueue(queue.slice(1)));
+      };
+
       audioInstance.addEventListener("timeupdate", handleTimeUpdate);
       audioInstance.addEventListener("durationchange", handleDurationChange);
       audioInstance.addEventListener("play", () =>
@@ -55,6 +74,7 @@ export const AudioProvider = ({ children }) => {
         dispatch(setIsPlaying(false))
       );
 
+      audioInstance.addEventListener("ended", handleEnded);
       return () => {
         audioInstance.removeEventListener("timeupdate", handleTimeUpdate);
         audioInstance.removeEventListener(
@@ -67,9 +87,10 @@ export const AudioProvider = ({ children }) => {
         audioInstance.removeEventListener("pause", () =>
           dispatch(setIsPlaying(false))
         );
+        audioInstance.removeEventListener("ended", handleEnded);
       };
     }
-  }, [isPlaying, dispatch, currentSong?.playUrl, readyState]);
+  }, [isPlaying, dispatch, currentSong?.playUrl, readyState, queue]);
 
   const togglePlay = () => {
     dispatch(

@@ -1,12 +1,13 @@
 import { capitalize, parseSanitizedHTML } from "./utils";
-import { useDispatch } from "react-redux";
-import { fetchFinalPlayUrl, setCurrentSong, setIsPlaying } from "../../reducers/player";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFinalPlayUrl, setCurrentSong, setIsPlaying, setQueue } from "../../reducers/player";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
 const SearchSongTile = ({ result }) => {
   const replacedTitle = parseSanitizedHTML(result?.title)
   const dispatch = useDispatch();
+  const queue = useSelector((state) => state.player.queue);
 
   return (
     <div
@@ -24,6 +25,31 @@ const SearchSongTile = ({ result }) => {
         className="w-14 h-14 rounded-md"
       />
       <MakeSearchTileDesc result={result} replacedTitle={replacedTitle} />
+
+      <div className="p-3 ml-auto flex items-center">
+        <div className="w-4 h-4 text-spotify-iconColor1"
+
+          onClick={
+            async (e) => {
+              e.stopPropagation();
+              if (queue?.length > 0) {
+                let newQueue = [...queue];
+                newQueue.push(result);
+                dispatch(setQueue(newQueue));
+              } else {
+                dispatch(setQueue([result]));
+              }
+
+              alert("Song added to queue");
+            }
+          }
+
+        >
+          <svg
+            fill={'currentColor'}
+            data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 16 16"><path d="M3 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm6.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM16 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path></svg>
+        </div>
+      </div>
     </div>
   );
 };

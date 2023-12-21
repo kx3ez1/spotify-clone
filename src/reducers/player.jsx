@@ -60,6 +60,7 @@ const playerSlice = createSlice({
         setReadyState: (state, action) => {
             state.readyState = action.payload;
         },
+        
     },
     extraReducers: {
         [fetchFinalPlayUrl.fulfilled]: (state, action) => {
