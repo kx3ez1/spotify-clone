@@ -2,13 +2,24 @@ import { useState, useEffect } from "react";
 import { capitalize, parseSanitizedHTML } from "./utils.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useAudio } from "../../app/audioContext.jsx";
-import { setIsPlaying } from "../../reducers/player.jsx";
+import { setIsPlaying, setCurrentSong, setIsFullScreen, setQueue, setIsRepeat } from "../../reducers/player.jsx";
+import { fetchFinalPlayUrl } from "../../reducers/player.jsx";
 
 const FixedBottomPlayer = () => {
   const dispatch = useDispatch();
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const isFullScreen = useSelector((state) => state.player.isFullScreen);
   const playerControl = useSelector((state) => state.player);
   const isPlaying = useSelector((state) => state.player.isPlaying);
+  const history = useSelector((state) => state.player.history);
+  const queue = useSelector((state) => state.player.queue);
+  const currentSong = useSelector((state) => state.player.currentSong);
+
+
+  const [isNextSongAvailable, setIsNextSongAvailable] = useState(false);
+  const [isPrevSongAvailable, setIsPrevSongAvailable] = useState(false);
+
+
+
   const currentPlayingSong = {
     title: playerControl?.currentSong?.title,
     sub_title: playerControl?.currentSong?.more_info?.album,
@@ -20,7 +31,7 @@ const FixedBottomPlayer = () => {
   };
 
   const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
+    dispatch(setIsFullScreen(!isFullScreen));
   };
 
   /**
@@ -37,6 +48,39 @@ const FixedBottomPlayer = () => {
 
 
   useEffect(() => {
+
+    if (currentSong.id !== undefined) {
+      if (currentSong && currentSong["isInHistory"]) {
+        // check current song is in history or not by checking id
+        let isSongInHistory = history.some((song) => song.id === currentSong.id);
+        if (isSongInHistory) {
+          // console.log("song is in history");
+          let currentSongIndex = history.findIndex((song) => song.id === currentSong.id);
+
+          // check next song is available in history or not
+          if (currentSongIndex < history.length - 1) {
+            setIsNextSongAvailable(true);
+          } else {
+            // if no next song available in history then check in queue
+            if (queue.length > 0) {
+              setIsNextSongAvailable(true);
+            } else {
+              setIsNextSongAvailable(false);
+            }
+          }
+
+          // check prev song is available in history or not
+          if (currentSongIndex > 0) {
+            setIsPrevSongAvailable(true);
+          } else {
+            setIsPrevSongAvailable(false);
+          }
+        }
+      }
+    }
+
+
+
     if (isFullScreen) {
       // on keyboard space to pause/play
       const handleKeyPress = (e) => {
@@ -51,12 +95,12 @@ const FixedBottomPlayer = () => {
         window.removeEventListener("keydown", handleKeyPress);
       };
     }
-  }, [dispatch, isFullScreen, isPlaying]);
+  }, [currentSong, dispatch, history, isFullScreen, isPlaying, queue]);
 
   return (
     currentPlayingSong?.title && (
       <div
-        className={`fixed bottom-0 left-0 z-50 transition-all duration-150 ease-in-out ${isFullScreen ? "w-screen h-screen" : "w-full h-16"
+        className={`fixed bottom-0 left-0 z-50 transition-all duration-150 ease-in-out ${isFullScreen ? "w-full h-full" : "w-full h-16"
           }`}
       >
         {!isFullScreen && (
@@ -76,11 +120,13 @@ const FixedBottomPlayer = () => {
                 </div>
                 <div className="grow">
                   {/* album name */}
-                  <div className="pl-Padding8px text-spotify-white font-semibold text-xs ">
+                  <div className="pl-Padding8px text-spotify-white font-semibold text-xs
+                  overflow-hidden line-clamp-2 overflow-ellipsis
+                  ">
                     {parseSanitizedHTML(capitalize(currentPlayingSong?.title))}
                   </div>
                 </div>
-                <div className="text-spotify-white flex">
+                <div className="text-spotify-white flex ml-auto">
                   {/* heart symbol or Like */}
                   <div className="w-10 h-10 p-Padding8px"
                     onClick={(e) => {
@@ -192,8 +238,10 @@ const FixedBottomPlayer = () => {
               </div>
               {/* album title */}
               <div className="mx-3 mb-4 flex justify-between">
-                <div className="w-full flex flex-col">
-                  <div className="text-2xl text-spotify-white font-semibold">
+                <div className="w-5/6 flex flex-col">
+                  <div className="text-2xl text-spotify-white font-semibold
+                  overflow-x-scroll whitespace-nowrap hide-scrollbar
+                  ">
                     {parseSanitizedHTML(capitalize(currentPlayingSong?.title))}
                   </div>
                   {/* sub title into ellipsis and capitalize */}
@@ -236,7 +284,20 @@ const FixedBottomPlayer = () => {
                   </svg>
                 </div>
                 {/* prev button */}
-                <div className="w-12 h-12 p-2 text-spotify-disabledBtn">
+                <div className={`w-12 h-12 p-2 ${isPrevSongAvailable ? "text-spotify-white" : "text-spotify-disabledBtn"
+                  }`}
+                  onClick={
+                    () => {
+                      if (isPrevSongAvailable) {
+                        let prevSong = history.findIndex((song) => song.id === currentSong.id) - 1;
+                        prevSong = history[prevSong];
+                        dispatch(setCurrentSong(prevSong))
+                        dispatch(fetchFinalPlayUrl(prevSong?.more_info?.encrypted_media_url));
+                        dispatch(setIsPlaying(true));
+                      }
+                    }
+                  }
+                >
                   <svg
                     data-encore-id="icon"
                     role="img"
@@ -276,7 +337,27 @@ const FixedBottomPlayer = () => {
                   </div>
                 </div>
                 {/* next icon*/}
-                <div className="w-12 h-12 p-2 text-spotify-disabledBtn">
+                <div className={"w-12 h-12 p-2 " + (isNextSongAvailable ? "text-spotify-white" : "text-spotify-disabledBtn")}
+                  onClick={
+                    () => {
+                      if (isNextSongAvailable) {
+                        let nextSongIndex = history.findIndex((song) => song.id === currentSong.id) + 1;
+                        if (nextSongIndex < history.length) {
+                          let nextSong = history[nextSongIndex];
+                          dispatch(setCurrentSong(nextSong))
+                          dispatch(fetchFinalPlayUrl(nextSong?.more_info?.encrypted_media_url));
+                          dispatch(setIsPlaying(true));
+                        } else {
+                          let nextSong = queue[0];
+                          dispatch(setCurrentSong(nextSong))
+                          dispatch(fetchFinalPlayUrl(nextSong?.more_info?.encrypted_media_url));
+                          dispatch(setIsPlaying(true));
+                          dispatch(setQueue(queue.slice(1)))
+                        }
+                      }
+                    }
+                  }
+                >
                   <svg
                     data-encore-id="icon"
                     role="img"
@@ -287,17 +368,28 @@ const FixedBottomPlayer = () => {
                     <path d="M17.7 3a.7.7 0 0 0-.7.7v6.805L5.05 3.606A.7.7 0 0 0 4 4.212v15.576a.7.7 0 0 0 1.05.606L17 13.495V20.3a.7.7 0 0 0 .7.7h1.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-1.6z"></path>
                   </svg>
                 </div>
-                {/* mode - reply,.. */}
-                <div className="w-10 h-10 p-2 text-spotify-disabledBtn">
-                  <svg
-                    data-encore-id="icon"
-                    role="img"
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill={"currentColor"}
-                  >
-                    <path d="M6 2a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h1v-2H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-4.798l1.298-1.298a1 1 0 1 0-1.414-1.414L9.373 19l3.713 3.712a1 1 0 0 0 1.414-1.414L13.202 20H18a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5H6z"></path>
-                  </svg>
+                {/* mode - replay, repeat.. */}
+                <div className={"w-10 h-10 p-2 " + `${playerControl.isRepeat ? "text-spotify-green" : "text-spotify-disabledBtn"}`}
+                  onClick={() => dispatch(setIsRepeat(!playerControl.isRepeat))}
+                >
+                  {!playerControl.isRepeat ?
+                    <svg
+                      data-encore-id="icon"
+                      role="img"
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill={"currentColor"}
+                    >
+                      <path d="M6 2a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h1v-2H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-4.798l1.298-1.298a1 1 0 1 0-1.414-1.414L9.373 19l3.713 3.712a1 1 0 0 0 1.414-1.414L13.202 20H18a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5H6z"></path>
+                    </svg>
+
+                    : <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 24 24"
+
+                      fill={"currentColor"}
+                    ><path d="M11.382 2.516c.306-.323.448-.7.448-.969h2V11h-2V5H10V3h.378c.341 0 .706-.17 1.004-.484zM1 7a5 5 0 0 1 5-5h1v2H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h1v2H6a5 5 0 0 1-5-5V7z"></path><path d="M18 4h-1V2h1a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5h-4.798l1.298 1.298a1 1 0 1 1-1.414 1.415L9.373 19l3.713-3.712a1 1 0 0 1 1.414 1.414L13.202 18H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3z"></path>
+                    </svg>
+
+                  }
                 </div>
               </div>
               {/* share */}
@@ -349,7 +441,9 @@ const ProgressBarFullScreenPlayer = () => {
         max={duration}
         value={currentTime}
         onChange={handleRangeChange}
-        className="transparent h-1 w-full cursor-pointer appearance-none rounded-sm border-transparent"
+        className="transparent h-1 w-full cursor-pointer appearance-none rounded-sm border-transparent
+        outline-none focus:outline-none focus:ring-0 focus:border-transparent
+        "
         style={{
           background: `linear-gradient(to right, #fff 0%, #fff ${(currentTime / duration) * 100
             }%, #6C7171 ${(currentTime / duration) * 100}%, #6C7171 100%)`,

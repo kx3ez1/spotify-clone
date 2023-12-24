@@ -18,3 +18,8 @@ export const replace150to500 = (url) => {
     }
     return url;
 };
+
+
+export const isObjectEmpty = (obj) => {
+    return Object.keys(obj).length === 0;
+}

@@ -6,7 +6,7 @@ const fetchFinalPlayUrl = createAsyncThunk(
     "player/fetchFinalSongUrl",
     async (songId) => {
         // console.log("fetchFinalPlayUrl: " + songId);
-        // double encoding is must
+        // double encoding is must for jio saavn api
         songId = encodeURIComponent(songId)
         songId = encodeURIComponent(songId)
         const response = await fetch(SERVER_ADDRESS + "/search/d?id=" + songId)
@@ -17,6 +17,7 @@ const fetchFinalPlayUrl = createAsyncThunk(
 const playerSlice = createSlice({
     name: "player",
     initialState: {
+        isFullScreen: false,
         currentSong: {},
         isPlaying: false,
         isLoaded: false,
@@ -28,16 +29,32 @@ const playerSlice = createSlice({
         currentTime: 0,
         duration: 0,
         queue: [],
+        history: [],
     },
     reducers: {
-        setCurrentSong: (state, action) => {
-            state.currentSong = action.payload;
+        setIsFullScreen: (state, action) => {
+            state.isFullScreen = action.payload;
         },
+        setCurrentSong: (state, action) => {
+            state.currentSong = { ...action.payload, isInHistory: true };           // add isInHistory property
+            state.history = state.history.some((item) => item.id === state.currentSong.id) ? state.history : [...state.history, state.currentSong]; // add to history if not already present
+            if (state.history.length > 20) {
+                state.history = state.history.slice(-20);
+            }
+        }, 
         setIsPlaying: (state, action) => {
             state.isPlaying = action.payload;
         },
         setQueue: (state, action) => {
             state.queue = action.payload;
+            state.queue = state.queue.filter((item, index, self) =>
+                index === self.findIndex((t) => (
+                    t.id === item.id
+                ))
+            )
+        },
+        setHistory: (state, action) => {
+            state.history = action.payload;
         },
         setIsLoaded: (state, action) => {
             state.isLoaded = action.payload;
@@ -60,7 +77,7 @@ const playerSlice = createSlice({
         setReadyState: (state, action) => {
             state.readyState = action.payload;
         },
-        
+
     },
     extraReducers: {
         [fetchFinalPlayUrl.fulfilled]: (state, action) => {
@@ -77,6 +94,7 @@ const playerSlice = createSlice({
 
 export const {
     setCurrentSong,
+    setIsFullScreen,
     setIsPlaying,
     setQueue,
     setIsLoaded,
@@ -86,6 +104,7 @@ export const {
     setCurrentTime,
     setDuration,
     setReadyState,
+    setHistory,
 } = playerSlice.actions;
 
 export { fetchFinalPlayUrl };

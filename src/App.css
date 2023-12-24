@@ -84,12 +84,15 @@ body {
   scroll-behavior: smooth;
 }
 
-#fullScreenProgressBar::-moz-range-track {
+#fullScreenProgressBar::-moz-range-track,
+#fullScreenProgressBar::-webkit-slider-runnable-track,
+#fullScreenProgressBar::-ms-track {
   height: 10px;
 }
 
 /* full screen music player scrollbar */
 #fullScreenProgressBar::-webkit-slider-thumb,
+#fullScreenProgressBar::-ms-thumb,
 #fullScreenProgressBar::-moz-range-thumb {
   -webkit-appearance: none;
   appearance: none;

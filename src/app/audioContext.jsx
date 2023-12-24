@@ -21,9 +21,11 @@ export const AudioProvider = ({ children }) => {
   const audioRef = useRef(new Audio());
   const currentSong = useSelector((state) => state.player.currentSong);
   const readyState = useSelector((state) => state.player.readyState);
+  const playerControls = useSelector((state) => state.player);
   const dispatch = useDispatch();
 
   const queue = useSelector((state) => state.player.queue);
+  const history = useSelector((state) => state.player.history);
 
   useEffect(() => {
     const audioInstance = audioRef.current;
@@ -39,7 +41,17 @@ export const AudioProvider = ({ children }) => {
         audioInstance.src = playUrl;
       }
       if (isPlaying) {
-        audioInstance.play();
+        let playPromise = audioInstance.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .catch((error) => {
+              // Auto-play was prevented
+              // Show paused UI.
+              dispatch(setIsPlaying(false));
+              alert("Oops! Something went wrong. Please refresh the page and try again.")
+              window.location.reload();
+            });
+        }
       } else {
         audioInstance.pause();
       }
@@ -53,16 +65,35 @@ export const AudioProvider = ({ children }) => {
       };
 
       const handleEnded = () => {
-        // dispatch(setIsPlaying(false));
-        if (queue.length === 0) {
+
+        if (playerControls.isRepeat) {
+          // if the song url is not valid then it will not play same song
+          // audioInstance.currentTime = 0;
+          // audioInstance.play();
+          // return;
+          dispatch(setCurrentSong(currentSong));
+          dispatch(fetchFinalPlayUrl(currentSong?.more_info?.encrypted_media_url));
+          dispatch(setIsPlaying(true));
           return;
         }
-        // dispatch(setDuration(0));
-        // dispatch(setCurrentTime(0));
-        dispatch(setCurrentSong(queue[0]));
-        dispatch(fetchFinalPlayUrl(queue[0]?.more_info?.encrypted_media_url));
-        dispatch(setIsPlaying(true));
-        dispatch(setQueue(queue.slice(1)));
+
+        // automatic play next song
+        if (queue.length === 0 && history.length === 0) {
+          return;
+        }
+
+        let nextSongIndex = history.findIndex((song) => song.id === currentSong.id) + 1;
+        if (nextSongIndex < history.length) {
+          dispatch(setCurrentSong(history[nextSongIndex]));
+          dispatch(fetchFinalPlayUrl(history[nextSongIndex]?.more_info?.encrypted_media_url));
+          dispatch(setIsPlaying(true));
+        } else {
+          dispatch(setCurrentSong(queue[0]));
+          dispatch(fetchFinalPlayUrl(queue[0]?.more_info?.encrypted_media_url));
+          dispatch(setIsPlaying(true));
+          dispatch(setQueue(queue.slice(1)));
+        }
+        return;
       };
 
       audioInstance.addEventListener("timeupdate", handleTimeUpdate);
@@ -90,7 +121,7 @@ export const AudioProvider = ({ children }) => {
         audioInstance.removeEventListener("ended", handleEnded);
       };
     }
-  }, [isPlaying, dispatch, currentSong?.playUrl, readyState, queue]);
+  }, [isPlaying, dispatch, currentSong?.playUrl, readyState, queue, currentSong, playerControls.isRepeat, history]);
 
   const togglePlay = () => {
     dispatch(

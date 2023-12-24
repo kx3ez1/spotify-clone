@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import NavMenu from "./child/nav-menu.jsx";
-import LibraryComponent from "./child/library.jsx";
-import TopNav from "./child/top-nav.jsx";
+import NavMenu from "./child/navigationMenu.jsx";
+import LibraryComponent from "./child/libraryComponent.jsx";
+import TopNav from "./child/topNavigation.jsx";
 import {
   fetchSearchSongs,
   fetchSearchAlbums,
@@ -10,18 +10,18 @@ import {
 } from "../reducers/searchRequests.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import * as searchReducer from "../reducers/search.jsx";
-import { capitalize } from "./child/utils.jsx";
+import { capitalize, isObjectEmpty } from "./child/utils.jsx";
 import {
   SearchAlbumTile,
   SearchArtistTile,
   SearchPlaylistTile,
   SearchSongTile,
-} from "./child/SearchTile.jsx";
-import FixedBottomPlayer from "./child/player.jsx";
+} from "./child/searchTileComponent.jsx";
 import { useParams, useNavigate } from "react-router-dom";
 
 function SearchComponent() {
   const state = useSelector((state) => state.search);
+  const currentSong = useSelector((state) => state.player.currentSong);
   const dispatch = useDispatch();
   // get query from url
   const { query, searchType } = useParams();
@@ -67,7 +67,6 @@ function SearchComponent() {
 
   return (
     <div className="bg-spotify-black w-screen h-screen p-2 flex">
-      <FixedBottomPlayer />
       {/* side menu */}
       {/* hidden in @mobile */}
       <div className="w-1/4 hidden md:block">
@@ -81,7 +80,7 @@ function SearchComponent() {
         </div>
       </div>
 
-      <div className="w-full h-full pl-2">
+      <div className={`w-full h-full pl-2 ${isObjectEmpty(currentSong) ? '' : 'pb-20'}`}>
         <div className="rounded-lg w-full h-full overflow-y-scroll">
           {/* search input field*/}
           <TopNav showSearch={true} searchInput={handleSearchInputChange} />
@@ -95,6 +94,9 @@ function SearchComponent() {
               <div
                 key={Math.random()}
                 onClick={() => {
+                  if (state.query === "") {
+                    return;
+                  }
                   // set this tag as active
                   navigate(`/search/${state.query}/${tag.param}`);
                 }}
@@ -111,6 +113,7 @@ function SearchComponent() {
           </div>
 
           <div className="h-full w-full">
+            <div className="pt-Padding8px"></div>
             {/* search results - songs*/}
             {tagList &&
               tagList[0].active &&

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { replace150to500 } from './utils';
+import { parseSanitizedHTML, replace150to500 } from './utils';
 
 
 const SpotifyHorizontalScrollView = ({ children, category }) => {
@@ -29,7 +29,7 @@ const AlbumCardV2 = ({ data }) => {
     const navigate = useNavigate();
 
     return (
-        <div className="p-2 flex flex-col"
+        <div className="p-2 flex flex-col cursor-pointer"
             onClick={async () => {
                 navigate(`/album/${data.id}`);
             }}
@@ -37,7 +37,13 @@ const AlbumCardV2 = ({ data }) => {
             <div className="w-36 h-36">
                 <img className="w-full h-full rounded-md max-w-full" src={replace150to500(data.image)} alt={data.title} />
             </div>
-            <div className="text-spotify-white text-sm">{data.title}</div>
+            <div className="
+            p-2
+            text-spotify-white text-sm
+            line-clamp-3 overflow-hidden overflow-ellipsis
+            ">{
+                    parseSanitizedHTML(data.title)
+                }</div>
         </div>
     );
 }
@@ -55,7 +61,7 @@ const ArtistCardV2 = ({ data }) => {
     };
 
     return (
-        <div className="p-2 flex flex-col"
+        <div className="p-2 flex flex-col cursor-pointer"
             onClick={async () => {
                 navigate(`/artist/${extractArtistToken(data)}`);
             }}
@@ -63,7 +69,11 @@ const ArtistCardV2 = ({ data }) => {
             <div className="w-36 h-36">
                 <img className="w-full h-full rounded-md max-w-full" src={replace150to500(data.image)} alt={data.title} />
             </div>
-            <div className="text-spotify-white text-sm">{data.title}</div>
+            <div className="p-2
+            text-spotify-white text-sm
+            line-clamp-3 overflow-hidden overflow-ellipsis">{
+                    parseSanitizedHTML(data.title)
+                }</div>
         </div>
     );
 }
@@ -73,7 +83,7 @@ const PlaylistCardV2 = ({ data }) => {
     const navigate = useNavigate();
 
     return (
-        <div className="p-2 flex flex-col"
+        <div className="p-2 flex flex-col cursor-pointer"
             onClick={async () => {
                 navigate(`/playlist/${data.id}`);
             }}
@@ -81,10 +91,15 @@ const PlaylistCardV2 = ({ data }) => {
             <div className="w-36 h-36">
                 <img className="w-full h-full rounded-md max-w-full" src={replace150to500(data.image)} alt={data.title} />
             </div>
-            <div className="text-spotify-white text-sm">{data.title}</div>
+            <div className="p-2
+            text-spotify-white text-sm
+            line-clamp-3 overflow-hidden overflow-ellipsis">{
+                    parseSanitizedHTML(data.title)
+                }</div>
         </div>
     );
 }
+
 
 export {
     AlbumCardV2,

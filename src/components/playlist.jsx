@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
-import FixedBottomPlayer from "./child/player.jsx";
 import { useEffect, useState } from 'react';
 import { SERVER_ADDRESS } from '../app/constants.jsx';
-import { SearchSongTile } from './child/SearchTile.jsx';
-import NavBackArrow from '../assets/nav-back-arrow.svg';
+import { SearchSongTile } from './child/searchTileComponent.jsx';
+import { LoadingComponent } from './child/commonComponents.jsx';
+import { parseSanitizedHTML } from './child/utils.jsx';
+import { BackNavigationWithTitle } from './child/commonComponents.jsx';
 
 
 const PlaylistViewComponent = () => {
@@ -38,7 +39,6 @@ const PlaylistViewComponent = () => {
 
     return (
         <div className='bg-spotify-black'>
-            <FixedBottomPlayer />
             {!isLoading ?
                 <div className='h-screen w-screen overflow-y-scroll'>
                     <div>
@@ -46,10 +46,11 @@ const PlaylistViewComponent = () => {
                         {/* <div className='h-14 w-full opacity-30 bg-black sticky'></div> */}
                         {/* content */}
                         <div>
+                            <BackNavigationWithTitle title={
+                                playListData.title ? playListData.title : ''
+                            } />
                             <div className="bg-gradient-to-b from-spotify-playlist_1 to-spotify-black to-90%">
-                                <div className="p-6 cursor-pointer">
-                                    <img src={NavBackArrow} className='w-6 h-6' onClick={() => window.history.back()} />
-                                </div>
+
                                 <div className='p-Padding16px'>
                                     {/* image */}
                                     <div className="h-40 mb-6 p-Padding8px flex justify-center items-center">
@@ -61,7 +62,7 @@ const PlaylistViewComponent = () => {
                                     </div>
                                     {/* title */}
                                     <div className="text-white text-3xl font-bold mb-6">
-                                        {playListData.title}
+                                        {parseSanitizedHTML(playListData.title)}
                                     </div>
                                     {/*  make description */}
                                     <div>
@@ -139,9 +140,7 @@ const PlaylistViewComponent = () => {
                         </div>
                     </div>
                 </div>
-                : <div className='h-screen w-screen flex justify-center items-center'>
-                    <div className='text-white text-2xl'>Loading...</div>
-                </div>
+                : <LoadingComponent />
             }
         </div>
     );

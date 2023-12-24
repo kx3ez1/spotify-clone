@@ -2,12 +2,14 @@ import { useEffect, useRef } from "react";
 import propTypes from "prop-types";
 import NavBackArrow from "./../../assets/nav-back-arrow.svg";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const TopNav = (props) => {
   const searchInputRef = useRef(null);
   const searchMobileInputRef = useRef(null);
   const searchMobileClearIconRef = useRef(null);
   const searchQuery = useSelector((state) => state.search.query);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (searchQuery) {
@@ -49,8 +51,16 @@ const TopNav = (props) => {
           {/* back arrow */}
           <img
             onClick={() => {
+              if (window.location.pathname === "/search") {
+                // go back to home page
+                navigate("/");
+                return;
+              }
+
+              navigate("/search");
+
               // go back to home page
-              window.history.back();
+              // window.history.back();
             }}
             src={NavBackArrow}
             alt="back arrow"

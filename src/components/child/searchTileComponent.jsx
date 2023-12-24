@@ -8,6 +8,7 @@ const SearchSongTile = ({ result }) => {
   const replacedTitle = parseSanitizedHTML(result?.title)
   const dispatch = useDispatch();
   const queue = useSelector((state) => state.player.queue);
+  const currentPlayingSong = useSelector((state) => state.player.currentSong);
 
   return (
     <div
@@ -24,8 +25,9 @@ const SearchSongTile = ({ result }) => {
         alt={replacedTitle}
         className="w-14 h-14 rounded-md"
       />
-      <MakeSearchTileDesc result={result} replacedTitle={replacedTitle} />
+      <MakeSearchTileDesc result={result} replacedTitle={replacedTitle} currentPlayingSong={currentPlayingSong} />
 
+      {/* three dots or song menu */}
       <div className="p-3 ml-auto flex items-center">
         <div className="w-4 h-4 text-spotify-iconColor1"
 
@@ -60,12 +62,12 @@ SearchSongTile.propTypes = {
   type: PropTypes.string,
 };
 
-const MakeSearchTileDesc = ({ result, replacedTitle }) => {
+const MakeSearchTileDesc = ({ result, replacedTitle, currentPlayingSong }) => {
   return (
     <div className="ml-4">
-      <div className="text-spotify-white">{replacedTitle}</div>
+      <div className={currentPlayingSong.id !== result.id ? "text-spotify-white" : "text-spotify-green"}>{replacedTitle}</div>
       <div className="text-spotify-gray">
-        {capitalize(result?.type)} •{parseSanitizedHTML(result?.more_info?.album)}
+        {capitalize(result?.type)} → {parseSanitizedHTML(result?.more_info?.album)} • {parseSanitizedHTML(result?.language)}
       </div>
     </div>
   );
@@ -74,6 +76,7 @@ const MakeSearchTileDesc = ({ result, replacedTitle }) => {
 MakeSearchTileDesc.propTypes = {
   result: PropTypes.object,
   replacedTitle: PropTypes.string,
+  currentPlayingSong: PropTypes.object,
 };
 
 const SearchAlbumTileDescription = ({ result, replacedTitle }) => {
@@ -82,7 +85,7 @@ const SearchAlbumTileDescription = ({ result, replacedTitle }) => {
       <div className="text-spotify-white w-full line-clamp-2 overflow-hidden overflow-ellipsis">
         {replacedTitle}
       </div>
-      <div className="text-spotify-gray">{capitalize(result?.type)}</div>
+      <div className="text-spotify-gray">{capitalize(result?.type)} •{parseSanitizedHTML(result?.language)} </div>
     </div>
   );
 };

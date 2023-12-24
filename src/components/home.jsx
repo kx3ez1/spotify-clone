@@ -1,13 +1,13 @@
-import NavMenu from "./child/nav-menu";
-import LibraryComponent from "./child/library.jsx";
-import { SpotifyHorizontalScrollView } from "./child/home-utils.jsx";
+import NavMenu from "./child/navigationMenu.jsx";
+import LibraryComponent from "./child/libraryComponent.jsx";
+import { SpotifyHorizontalScrollView, AlbumCardV2, ArtistCardV2, PlaylistCardV2 } from "./child/homeUtilities.jsx";
 import { useEffect, useState } from "react";
 import { SERVER_ADDRESS } from "../app/constants.jsx";
-import { AlbumCardV2, ArtistCardV2, PlaylistCardV2 } from "./child/home-utils.jsx";
-import FixedBottomPlayer from "./child/player.jsx";
+import { useNavigate } from "react-router-dom";
 
 const HomeComponent = () => {
   const [trendingData, setTrendingData] = useState({});
+  const navigate = useNavigate();
   const welcomeMessage = () => {
     const date = new Date();
     const hours = date.getHours();
@@ -35,7 +35,6 @@ const HomeComponent = () => {
 
   return (
     <div className="bg-spotify-black w-screen h-screen flex">
-      <FixedBottomPlayer />
       {/* side menu */}
       {/* hidden in @mobile */}
       <div className="w-1/4 hidden md:block">
@@ -56,11 +55,18 @@ const HomeComponent = () => {
           {/* greetings */}
           <div className="text-white text-2xl font-semibold">{welcomeMessage()}</div>
 
-          <div>
+          <div className="flex items-center">
             {/* notifications */}
 
 
-            {/* listening history */}
+            {/* search */}
+            <div className="p-3 text-spotify-white" onClick={() => {
+              navigate("/search");
+            }}>
+              <svg data-encore-id="icon" role="img" aria-hidden="true"
+                fill="currentColor" className="w-6 h-6"
+                viewBox="0 0 24 24"><path d="M10.533 1.279c-5.18 0-9.407 4.14-9.407 9.279s4.226 9.279 9.407 9.279c2.234 0 4.29-.77 5.907-2.058l4.353 4.353a1 1 0 1 0 1.414-1.414l-4.344-4.344a9.157 9.157 0 0 0 2.077-5.816c0-5.14-4.226-9.28-9.407-9.28zm-7.407 9.279c0-4.006 3.302-7.28 7.407-7.28s7.407 3.274 7.407 7.28-3.302 7.279-7.407 7.279-7.407-3.273-7.407-7.28z"></path></svg>
+            </div>
 
             {/* settings  */}
             <div className="text-spotify-white p-3">
