@@ -80,7 +80,7 @@ function SearchComponent() {
         </div>
       </div>
 
-      <div className={`w-full h-full pl-2 ${isObjectEmpty(currentSong) ? '' : 'pb-20'}`}>
+      <div className={`w-full h-full pl-2 ${isObjectEmpty(currentSong) ? '' : 'pb-18'}`}>
         <div className="rounded-lg w-full h-full overflow-y-scroll">
           {/* search input field*/}
           <TopNav showSearch={true} searchInput={handleSearchInputChange} />
@@ -94,9 +94,11 @@ function SearchComponent() {
               <div
                 key={Math.random()}
                 onClick={() => {
+                  dispatch(searchReducer.setSearchType(tag.param));
                   if (state.query === "") {
                     return;
                   }
+
                   // set this tag as active
                   navigate(`/search/${state.query}/${tag.param}`);
                 }}

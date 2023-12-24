@@ -188,8 +188,8 @@ const FixedBottomPlayer = () => {
         )}
         {isFullScreen && (
           <div className="h-full w-full bg-gradient-to-b from-spotify-bigPlayer_1 to-spotify-bigPlayer_2 to-90%">
-            <div className="flex flex-col p-3">
-              <div className="mb-10 flex justify-between w-full">
+            <div className="h-full flex flex-col p-3">
+              <div className="flex justify-between w-full">
                 {/* minimize player button*/}
                 <div className="p-3 cursor-pointer" onClick={toggleFullScreen}>
                   <div className="w-6 h-6">
@@ -229,23 +229,21 @@ const FixedBottomPlayer = () => {
                 </div>
               </div>
               {/* album image */}
-              <div className="h-72 mb-6 p-Padding8px flex justify-center items-center">
+              <div className="w-full h-full mb-6 p-Padding8px flex justify-center items-center">
                 <img
                   src={replace150to500(currentPlayingSong?.image)}
-                  className="w-72 h-full"
+                  className="h-72 w-72"
                   alt="img"
                 />
               </div>
               {/* album title */}
               <div className="mx-3 mb-4 flex justify-between">
                 <div className="w-5/6 flex flex-col">
-                  <div className="text-2xl text-spotify-white font-semibold
-                  overflow-x-scroll whitespace-nowrap hide-scrollbar
-                  ">
+                  <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-spotify-white font-semibold overflow-x-scroll whitespace-nowrap hide-scrollbar">
                     {parseSanitizedHTML(capitalize(currentPlayingSong?.title))}
                   </div>
                   {/* sub title into ellipsis and capitalize */}
-                  <div className="text-lg text-spotify-black overflow-hidden whitespace-nowrap overflow-ellipsis">
+                  <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-spotify-black overflow-hidden whitespace-nowrap overflow-ellipsis">
                     {parseSanitizedHTML(capitalize(currentPlayingSong?.sub_title))}
                   </div>
                 </div>
@@ -269,110 +267,11 @@ const FixedBottomPlayer = () => {
               <ProgressBarFullScreenPlayer currentPlayingSong={currentPlayingSong} />
               {/* player controls  */}
               {/*-----starts here---------*/}
-              <div className="flex justify-between items-center">
-                {/* shuffle */}
-                <div className="w-10 h-10 p-2 text-spotify-disabledBtn">
-                  <svg
-                    data-encore-id="icon"
-                    role="img"
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill={"currentColor"}
-                  >
-                    <path d="M18.788 3.702a1 1 0 0 1 1.414-1.414L23.914 6l-3.712 3.712a1 1 0 1 1-1.414-1.414L20.086 7h-1.518a5 5 0 0 0-3.826 1.78l-7.346 8.73a7 7 0 0 1-5.356 2.494H1v-2h1.04a5 5 0 0 0 3.826-1.781l7.345-8.73A7 7 0 0 1 18.569 5h1.518l-1.298-1.298z"></path>
-                    <path d="M18.788 14.289a1 1 0 0 0 0 1.414L20.086 17h-1.518a5 5 0 0 1-3.826-1.78l-1.403-1.668-1.306 1.554 1.178 1.4A7 7 0 0 0 18.568 19h1.518l-1.298 1.298a1 1 0 1 0 1.414 1.414L23.914 18l-3.712-3.713a1 1 0 0 0-1.414 0zM7.396 6.49l2.023 2.404-1.307 1.553-2.246-2.67a5 5 0 0 0-3.826-1.78H1v-2h1.04A7 7 0 0 1 7.396 6.49z"></path>
-                  </svg>
-                </div>
-                {/* prev button */}
-                <div className={`w-12 h-12 p-2 ${isPrevSongAvailable ? "text-spotify-white" : "text-spotify-disabledBtn"
-                  }`}
-                  onClick={
-                    () => {
-                      if (isPrevSongAvailable) {
-                        let prevSong = history.findIndex((song) => song.id === currentSong.id) - 1;
-                        prevSong = history[prevSong];
-                        dispatch(setCurrentSong(prevSong))
-                        dispatch(fetchFinalPlayUrl(prevSong?.more_info?.encrypted_media_url));
-                        dispatch(setIsPlaying(true));
-                      }
-                    }
-                  }
-                >
-                  <svg
-                    data-encore-id="icon"
-                    role="img"
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill={"currentColor"}
-                  >
-                    <path d="M6.3 3a.7.7 0 0 1 .7.7v6.805l11.95-6.899a.7.7 0 0 1 1.05.606v15.576a.7.7 0 0 1-1.05.606L7 13.495V20.3a.7.7 0 0 1-.7.7H4.7a.7.7 0 0 1-.7-.7V3.7a.7.7 0 0 1 .7-.7h1.6z"></path>
-                  </svg>
-                </div>
-                {/* play and pause */}
-                <div
-                  className="w-14 h-14 bg-spotify-white flex justify-center items-center rounded-full"
-                  onClick={() => dispatch(setIsPlaying(!isPlaying))}
-                >
-                  <div className="w-6 h-6">
-                    {!isPlaying ? (
-                      <svg
-                        data-encore-id="icon"
-                        role="img"
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path>
-                      </svg>
-                    ) : (
-                      <svg
-                        data-encore-id="icon"
-                        fill={"currentColor"}
-                        role="img"
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
-                      </svg>
-                    )}
-                  </div>
-                </div>
-                {/* next icon*/}
-                <div className={"w-12 h-12 p-2 " + (isNextSongAvailable ? "text-spotify-white" : "text-spotify-disabledBtn")}
-                  onClick={
-                    () => {
-                      if (isNextSongAvailable) {
-                        let nextSongIndex = history.findIndex((song) => song.id === currentSong.id) + 1;
-                        if (nextSongIndex < history.length) {
-                          let nextSong = history[nextSongIndex];
-                          dispatch(setCurrentSong(nextSong))
-                          dispatch(fetchFinalPlayUrl(nextSong?.more_info?.encrypted_media_url));
-                          dispatch(setIsPlaying(true));
-                        } else {
-                          let nextSong = queue[0];
-                          dispatch(setCurrentSong(nextSong))
-                          dispatch(fetchFinalPlayUrl(nextSong?.more_info?.encrypted_media_url));
-                          dispatch(setIsPlaying(true));
-                          dispatch(setQueue(queue.slice(1)))
-                        }
-                      }
-                    }
-                  }
-                >
-                  <svg
-                    data-encore-id="icon"
-                    role="img"
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    fill={"currentColor"}
-                  >
-                    <path d="M17.7 3a.7.7 0 0 0-.7.7v6.805L5.05 3.606A.7.7 0 0 0 4 4.212v15.576a.7.7 0 0 0 1.05.606L17 13.495V20.3a.7.7 0 0 0 .7.7h1.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-1.6z"></path>
-                  </svg>
-                </div>
-                {/* mode - replay, repeat.. */}
-                <div className={"w-10 h-10 p-2 " + `${playerControl.isRepeat ? "text-spotify-green" : "text-spotify-disabledBtn"}`}
-                  onClick={() => dispatch(setIsRepeat(!playerControl.isRepeat))}
-                >
-                  {!playerControl.isRepeat ?
+
+              <div className="mt-auto pb-10">
+                <div className="flex justify-between items-center">
+                  {/* shuffle */}
+                  <div className="w-10 h-10 p-2 text-spotify-disabledBtn">
                     <svg
                       data-encore-id="icon"
                       role="img"
@@ -380,35 +279,136 @@ const FixedBottomPlayer = () => {
                       viewBox="0 0 24 24"
                       fill={"currentColor"}
                     >
-                      <path d="M6 2a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h1v-2H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-4.798l1.298-1.298a1 1 0 1 0-1.414-1.414L9.373 19l3.713 3.712a1 1 0 0 0 1.414-1.414L13.202 20H18a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5H6z"></path>
+                      <path d="M18.788 3.702a1 1 0 0 1 1.414-1.414L23.914 6l-3.712 3.712a1 1 0 1 1-1.414-1.414L20.086 7h-1.518a5 5 0 0 0-3.826 1.78l-7.346 8.73a7 7 0 0 1-5.356 2.494H1v-2h1.04a5 5 0 0 0 3.826-1.781l7.345-8.73A7 7 0 0 1 18.569 5h1.518l-1.298-1.298z"></path>
+                      <path d="M18.788 14.289a1 1 0 0 0 0 1.414L20.086 17h-1.518a5 5 0 0 1-3.826-1.78l-1.403-1.668-1.306 1.554 1.178 1.4A7 7 0 0 0 18.568 19h1.518l-1.298 1.298a1 1 0 1 0 1.414 1.414L23.914 18l-3.712-3.713a1 1 0 0 0-1.414 0zM7.396 6.49l2.023 2.404-1.307 1.553-2.246-2.67a5 5 0 0 0-3.826-1.78H1v-2h1.04A7 7 0 0 1 7.396 6.49z"></path>
                     </svg>
-
-                    : <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 24 24"
-
-                      fill={"currentColor"}
-                    ><path d="M11.382 2.516c.306-.323.448-.7.448-.969h2V11h-2V5H10V3h.378c.341 0 .706-.17 1.004-.484zM1 7a5 5 0 0 1 5-5h1v2H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h1v2H6a5 5 0 0 1-5-5V7z"></path><path d="M18 4h-1V2h1a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5h-4.798l1.298 1.298a1 1 0 1 1-1.414 1.415L9.373 19l3.713-3.712a1 1 0 0 1 1.414 1.414L13.202 18H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3z"></path>
-                    </svg>
-
-                  }
-                </div>
-              </div>
-              {/* share */}
-              <div className="flex justify-end">
-                <div className="w-4 h-4">
-                  <svg
-                    data-encore-id="icon"
-                    role="img"
-                    aria-hidden="true"
-                    viewBox="0 0 16 16"
-                    fill={"white"}
-                    className="Svg-sc-ytk21e-0 kPpCsU"
+                  </div>
+                  {/* prev button */}
+                  <div className={`w-12 h-12 p-2 ${isPrevSongAvailable ? "text-spotify-white" : "text-spotify-disabledBtn"
+                    }`}
+                    onClick={
+                      () => {
+                        if (isPrevSongAvailable) {
+                          let prevSong = history.findIndex((song) => song.id === currentSong.id) - 1;
+                          prevSong = history[prevSong];
+                          dispatch(setCurrentSong(prevSong))
+                          dispatch(fetchFinalPlayUrl(prevSong?.more_info?.encrypted_media_url));
+                          dispatch(setIsPlaying(true));
+                        }
+                      }
+                    }
                   >
-                    <path d="M12.875 2a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25zM10.25 3.125a2.625 2.625 0 1 1 .754 1.841L5.75 8l5.254 3.034a2.625 2.625 0 1 1-.704 1.326l-5-2.889a2.625 2.625 0 1 1 0-2.943l5-2.888a2.634 2.634 0 0 1-.051-.516zm-7.125 3.75a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25zm9.75 4.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25z"></path>
-                  </svg>
+                    <svg
+                      data-encore-id="icon"
+                      role="img"
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill={"currentColor"}
+                    >
+                      <path d="M6.3 3a.7.7 0 0 1 .7.7v6.805l11.95-6.899a.7.7 0 0 1 1.05.606v15.576a.7.7 0 0 1-1.05.606L7 13.495V20.3a.7.7 0 0 1-.7.7H4.7a.7.7 0 0 1-.7-.7V3.7a.7.7 0 0 1 .7-.7h1.6z"></path>
+                    </svg>
+                  </div>
+                  {/* play and pause */}
+                  <div
+                    className="w-14 h-14 bg-spotify-white flex justify-center items-center rounded-full"
+                    onClick={() => dispatch(setIsPlaying(!isPlaying))}
+                  >
+                    <div className="w-6 h-6">
+                      {!isPlaying ? (
+                        <svg
+                          data-encore-id="icon"
+                          role="img"
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path>
+                        </svg>
+                      ) : (
+                        <svg
+                          data-encore-id="icon"
+                          fill={"currentColor"}
+                          role="img"
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path>
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  {/* next icon*/}
+                  <div className={"w-12 h-12 p-2 " + (isNextSongAvailable ? "text-spotify-white" : "text-spotify-disabledBtn")}
+                    onClick={
+                      () => {
+                        if (isNextSongAvailable) {
+                          let nextSongIndex = history.findIndex((song) => song.id === currentSong.id) + 1;
+                          if (nextSongIndex < history.length) {
+                            let nextSong = history[nextSongIndex];
+                            dispatch(setCurrentSong(nextSong))
+                            dispatch(fetchFinalPlayUrl(nextSong?.more_info?.encrypted_media_url));
+                            dispatch(setIsPlaying(true));
+                          } else {
+                            let nextSong = queue[0];
+                            dispatch(setCurrentSong(nextSong))
+                            dispatch(fetchFinalPlayUrl(nextSong?.more_info?.encrypted_media_url));
+                            dispatch(setIsPlaying(true));
+                            dispatch(setQueue(queue.slice(1)))
+                          }
+                        }
+                      }
+                    }
+                  >
+                    <svg
+                      data-encore-id="icon"
+                      role="img"
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill={"currentColor"}
+                    >
+                      <path d="M17.7 3a.7.7 0 0 0-.7.7v6.805L5.05 3.606A.7.7 0 0 0 4 4.212v15.576a.7.7 0 0 0 1.05.606L17 13.495V20.3a.7.7 0 0 0 .7.7h1.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-1.6z"></path>
+                    </svg>
+                  </div>
+                  {/* mode - replay, repeat.. */}
+                  <div className={"w-10 h-10 p-2 " + `${playerControl.isRepeat ? "text-spotify-green" : "text-spotify-disabledBtn"}`}
+                    onClick={() => dispatch(setIsRepeat(!playerControl.isRepeat))}
+                  >
+                    {!playerControl.isRepeat ?
+                      <svg
+                        data-encore-id="icon"
+                        role="img"
+                        aria-hidden="true"
+                        viewBox="0 0 24 24"
+                        fill={"currentColor"}
+                      >
+                        <path d="M6 2a5 5 0 0 0-5 5v8a5 5 0 0 0 5 5h1v-2H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-4.798l1.298-1.298a1 1 0 1 0-1.414-1.414L9.373 19l3.713 3.712a1 1 0 0 0 1.414-1.414L13.202 20H18a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5H6z"></path>
+                      </svg>
+
+                      : <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 24 24"
+
+                        fill={"currentColor"}
+                      ><path d="M11.382 2.516c.306-.323.448-.7.448-.969h2V11h-2V5H10V3h.378c.341 0 .706-.17 1.004-.484zM1 7a5 5 0 0 1 5-5h1v2H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h1v2H6a5 5 0 0 1-5-5V7z"></path><path d="M18 4h-1V2h1a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5h-4.798l1.298 1.298a1 1 0 1 1-1.414 1.415L9.373 19l3.713-3.712a1 1 0 0 1 1.414 1.414L13.202 18H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3z"></path>
+                      </svg>
+
+                    }
+                  </div>
                 </div>
+                {/* share */}
+                <div className=" p-3 flex justify-end text-spotify-white">
+                  <div className="w-4 h-4">
+                    <svg
+                      data-encore-id="icon"
+                      role="img"
+                      aria-hidden="true"
+                      viewBox="0 0 16 16"
+                      fill={"currentColor"}
+                    >
+                      <path d="M12.875 2a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25zM10.25 3.125a2.625 2.625 0 1 1 .754 1.841L5.75 8l5.254 3.034a2.625 2.625 0 1 1-.704 1.326l-5-2.889a2.625 2.625 0 1 1 0-2.943l5-2.888a2.634 2.634 0 0 1-.051-.516zm-7.125 3.75a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25zm9.75 4.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25z"></path>
+                    </svg>
+                  </div>
+                </div>
+                {/*<h1>Colors</h1>*/}
+                {/*<ImageColorExtractor imageUrl={'https://i.scdn.co/image/ab67616d0000b273fac61ec6ab51254a1a4ee6b1'}/>*/}
               </div>
-              {/*<h1>Colors</h1>*/}
-              {/*<ImageColorExtractor imageUrl={'https://i.scdn.co/image/ab67616d0000b273fac61ec6ab51254a1a4ee6b1'}/>*/}
             </div>
           </div>
         )}

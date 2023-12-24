@@ -25,6 +25,14 @@ const searchSlice = createSlice({
   },
   reducers: {
     setQuery: (state, action) => {
+      if (action.payload === "") {
+        state.searchResults = {
+          songs: {},
+          artists: {},
+          albums: {},
+          playlists: {},
+        };
+      }
       state.query = action.payload;
     },
     setSearchType: (state, action) => {
