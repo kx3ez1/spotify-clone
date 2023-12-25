@@ -11,17 +11,17 @@ const CustomRoutes = () => (
   <BrowserRouter>
     <Routes>
       {/* main view */}
-      <Route path="/search" element={<SearchComponent />} />
-      <Route path="/home" element={<HomeComponent />} />
-      <Route path="/search/:query/:searchType" element={<SearchComponent />} />
+      <Route path="/search" exact element={<SearchComponent />} />
+      <Route path="/home" exact element={<HomeComponent />} />
+      <Route path="/search/:query/:searchType" exact element={<SearchComponent />} />
       {/* sub view */}
-      <Route path="/album/:albumId" element={<AlbumViewComponent />} />  {/* album view */}
-      <Route path="/artist/:artistId" element={<ArtistViewComponent />} />  {/* artist view */}
-      <Route path="/playlist/:playListId" element={<PlaylistViewComponent />} /> {/* playlist view */}
+      <Route path="/album/:albumId" exact element={<AlbumViewComponent />} />  {/* album view */}
+      <Route path="/artist/:artistId" exact element={<ArtistViewComponent />} />  {/* artist view */}
+      <Route path="/playlist/:playListId" exact element={<PlaylistViewComponent />} /> {/* playlist view */}
       {/* 404 */}
-      <Route path="*" element={<NotFoundComponent />} />
+      <Route path="*" exact element={<NotFoundComponent />} />
       {/* Redirect */}
-      <Route path="/" element={<Navigate to="/home" />} />
+      <Route path="/" exact element={<Navigate to="/home" />} />
     </Routes>
   </BrowserRouter>
 );
