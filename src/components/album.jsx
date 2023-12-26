@@ -4,6 +4,7 @@ import { SERVER_ADDRESS } from "../app/constants.jsx";
 import { SearchSongTile } from "./child/searchTileComponent";
 import { BackNavigationWithTitle, LoadingComponent } from "./child/commonComponents.jsx";
 import { parseSanitizedHTML } from "./child/utils.jsx";
+import FixedBottomPlayer from "./child/playerComponent.jsx";
 
 const AlbumViewComponent = () => {
 
@@ -37,6 +38,7 @@ const AlbumViewComponent = () => {
         <div className="bg-spotify-black">
             {!isLoading ? <div className='h-screen w-screen'>
                 <div>
+                    <FixedBottomPlayer />
                     {/* back button */}
                     {/* navigation */}
                     {/* <div className='h-14 w-full opacity-30 bg-black sticky'></div> */}
@@ -44,7 +46,11 @@ const AlbumViewComponent = () => {
                     <div>
                         <BackNavigationWithTitle title={
                             albumData.title ? albumData.title : ''
-                        } />
+                        }
+                            navColor={
+                                'bg-spotify-playlist_1'
+                            }
+                        />
                         <div className="bg-gradient-to-b from-spotify-playlist_1 to-spotify-black to-90%">
 
                             <div className='p-Padding16px'>

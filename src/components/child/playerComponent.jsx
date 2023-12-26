@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAudio } from "../../app/audioContext.jsx";
 import { setIsPlaying, setCurrentSong, setIsFullScreen, setQueue, setIsRepeat } from "../../reducers/player.jsx";
 import { fetchFinalPlayUrl } from "../../reducers/player.jsx";
+import { useNavigate } from "react-router-dom";
 
 const FixedBottomPlayer = () => {
   const dispatch = useDispatch();
@@ -13,7 +14,7 @@ const FixedBottomPlayer = () => {
   const history = useSelector((state) => state.player.history);
   const queue = useSelector((state) => state.player.queue);
   const currentSong = useSelector((state) => state.player.currentSong);
-
+  const navigate = useNavigate();
 
   const [isNextSongAvailable, setIsNextSongAvailable] = useState(false);
   const [isPrevSongAvailable, setIsPrevSongAvailable] = useState(false);
@@ -392,9 +393,24 @@ const FixedBottomPlayer = () => {
                     }
                   </div>
                 </div>
-                {/* share */}
-                <div className=" p-3 flex justify-end text-spotify-white">
-                  <div className="w-4 h-4">
+
+                <div className="p-3 flex justify-end text-spotify-white space-x-6">
+                  {/* queue */}
+                  {/* <Link to="/queue"> */}
+                  <div className="w-6 h-6 text-spotify-green"
+                    onClick={() => {
+                      dispatch(setIsFullScreen(false));
+                      if (window.location.pathname !== "/queue") {
+                        navigate("/queue");
+                      }
+                    }
+                    }
+                  >
+                    <svg data-encore-id="icon" role="img" aria-hidden="true" viewBox="0 0 16 16" fill={"currentColor"}><path d="M15 15H1v-1.5h14V15zm0-4.5H1V9h14v1.5zm-14-7A2.5 2.5 0 0 1 3.5 1h9a2.5 2.5 0 0 1 0 5h-9A2.5 2.5 0 0 1 1 3.5zm2.5-1a1 1 0 0 0 0 2h9a1 1 0 1 0 0-2h-9z"></path></svg>
+                  </div>
+
+                  {/* share */}
+                  <div className="w-6 h-6">
                     <svg
                       data-encore-id="icon"
                       role="img"

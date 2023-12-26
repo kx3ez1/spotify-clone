@@ -5,6 +5,7 @@ import { SearchSongTile } from './child/searchTileComponent.jsx';
 import { LoadingComponent } from './child/commonComponents.jsx';
 import { parseSanitizedHTML } from './child/utils.jsx';
 import { BackNavigationWithTitle } from './child/commonComponents.jsx';
+import FixedBottomPlayer from './child/playerComponent.jsx';
 
 
 const PlaylistViewComponent = () => {
@@ -39,8 +40,9 @@ const PlaylistViewComponent = () => {
 
     return (
         <div className='bg-spotify-black'>
+            <FixedBottomPlayer />
             {!isLoading ?
-                <div className='h-screen w-screen overflow-y-scroll'>
+                <div className='h-screen w-screen'>
                     <div>
                         {/* navigation */}
                         {/* <div className='h-14 w-full opacity-30 bg-black sticky'></div> */}
@@ -48,7 +50,11 @@ const PlaylistViewComponent = () => {
                         <div>
                             <BackNavigationWithTitle title={
                                 playListData.title ? playListData.title : ''
-                            } />
+                            }
+                                navColor={
+                                    'bg-spotify-playlist_1'
+                                }
+                            />
                             <div className="bg-gradient-to-b from-spotify-playlist_1 to-spotify-black to-90%">
 
                                 <div className='p-Padding16px'>

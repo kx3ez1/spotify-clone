@@ -1,6 +1,6 @@
 import { capitalize, parseSanitizedHTML } from "./utils";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchFinalPlayUrl, setCurrentSong, setIsPlaying, setQueue } from "../../reducers/player";
+import { fetchFinalPlayUrl, setCurrentSong, setHistory, setIsPlaying, setQueue } from "../../reducers/player";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +9,7 @@ const SearchSongTile = ({ result }) => {
   const dispatch = useDispatch();
   const queue = useSelector((state) => state.player.queue);
   const currentPlayingSong = useSelector((state) => state.player.currentSong);
+  const history = useSelector((state) => state.player.history);
 
   return (
     <div
@@ -34,15 +35,26 @@ const SearchSongTile = ({ result }) => {
           onClick={
             async (e) => {
               e.stopPropagation();
-              if (queue?.length > 0) {
-                let newQueue = [...queue];
-                newQueue.push(result);
-                dispatch(setQueue(newQueue));
+              if (currentPlayingSong.id !== result.id) {
+                if (queue?.length > 0) {
+                  let newQueue = [...queue];
+                  newQueue.push(result);
+                  dispatch(setQueue(newQueue));
+                  // remove song from history if it exists
+                  let newHistory = [...history];
+                  newHistory = newHistory.filter((song) => song.id !== result.id);
+                  dispatch(setHistory(newHistory));
+                } else {
+                  // remove song from history if it exists
+                  let newHistory = [...history];
+                  newHistory = newHistory.filter((song) => song.id !== result.id);
+                  dispatch(setHistory(newHistory));
+                  dispatch(setQueue([result]));
+                }
+                alert("Song added to queue");
               } else {
-                dispatch(setQueue([result]));
+                alert("Song already playing");
               }
-
-              alert("Song added to queue");
             }
           }
 

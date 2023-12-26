@@ -18,6 +18,7 @@ import {
   SearchSongTile,
 } from "./child/searchTileComponent.jsx";
 import { useParams, useNavigate } from "react-router-dom";
+import FixedBottomPlayer from "./child/playerComponent.jsx";
 
 function SearchComponent() {
   const state = useSelector((state) => state.search);
@@ -67,6 +68,7 @@ function SearchComponent() {
 
   return (
     <div className="bg-spotify-black w-screen h-screen p-2 flex">
+      <FixedBottomPlayer />
       {/* side menu */}
       {/* hidden in @mobile */}
       <div className="w-1/4 hidden md:block">

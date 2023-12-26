@@ -48,8 +48,11 @@ export const AudioProvider = ({ children }) => {
               // Auto-play was prevented
               // Show paused UI.
               dispatch(setIsPlaying(false));
-              alert("Oops! Something went wrong. Please refresh the page and try again.")
-              window.location.reload();
+              // alert("Oops! Something went wrong. Please refresh the page and try again.")
+
+              setTimeout(() => {
+                window.location.reload();
+              }, 2000);
             });
         }
       } else {

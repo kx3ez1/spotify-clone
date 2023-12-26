@@ -4,6 +4,7 @@ import { SpotifyHorizontalScrollView, AlbumCardV2, ArtistCardV2, PlaylistCardV2 
 import { useEffect, useState } from "react";
 import { SERVER_ADDRESS } from "../app/constants.jsx";
 import { useNavigate } from "react-router-dom";
+import FixedBottomPlayer from "./child/playerComponent.jsx";
 
 const HomeComponent = () => {
   const [trendingData, setTrendingData] = useState({});
@@ -35,6 +36,7 @@ const HomeComponent = () => {
 
   return (
     <div className="bg-spotify-black w-screen h-screen flex">
+      <FixedBottomPlayer />
       {/* side menu */}
       {/* hidden in @mobile */}
       <div className="w-1/4 hidden md:block">

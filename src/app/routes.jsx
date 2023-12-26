@@ -6,10 +6,16 @@ import SearchComponent from "../components/search";
 import PlaylistViewComponent from "../components/playlist";
 import AlbumViewComponent from "../components/album";
 import ArtistViewComponent from "../components/artist";
+import QueueComponent from "../components/queue";
+import FixedBottomPlayer from "../components/child/playerComponent";
 
 const CustomRoutes = () => (
   <BrowserRouter>
     <Routes>
+      {/* random route for functionality */}
+      <Route path="/fixed-bottom-player" exact element={<FixedBottomPlayer />} />
+      {/* queue view */}
+      <Route path="/queue" exact element={<QueueComponent />} />
       {/* main view */}
       <Route path="/search" exact element={<SearchComponent />} />
       <Route path="/home" exact element={<HomeComponent />} />

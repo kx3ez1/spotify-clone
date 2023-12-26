@@ -36,12 +36,29 @@ const playerSlice = createSlice({
             state.isFullScreen = action.payload;
         },
         setCurrentSong: (state, action) => {
-            state.currentSong = { ...action.payload, isInHistory: true };           // add isInHistory property
-            state.history = state.history.some((item) => item.id === state.currentSong.id) ? state.history : [...state.history, state.currentSong]; // add to history if not already present
-            if (state.history.length > 20) {
-                state.history = state.history.slice(-20);
+            if (action.payload.id) {
+                state.currentSong = { ...action.payload, isInHistory: true };           // add isInHistory property
             }
-        }, 
+            state.history = state.history.some((item) => item.id === state.currentSong.id) ? state.history : [...state.history, state.currentSong]; // add to history if not already present
+            if (state.history.length > 50) {
+                state.history = state.history.slice(-50);
+            }
+            // remove duplicates from history
+            state.history = state.history.filter((item, index, self) =>
+                index === self.findIndex((t) => (
+                    t.id === item.id
+                ))
+            )
+            // remove current playing song from queue
+            state.queue = state.queue.filter((item, index, self) => {
+                if (item.id === state.currentSong.id) {
+                    return false;
+                }
+                return index === self.findIndex((t) => (
+                    t.id === item.id
+                ))
+            })
+        },
         setIsPlaying: (state, action) => {
             state.isPlaying = action.payload;
         },
