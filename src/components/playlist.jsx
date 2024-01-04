@@ -6,6 +6,9 @@ import { LoadingComponent } from './child/commonComponents.jsx';
 import { parseSanitizedHTML } from './child/utils.jsx';
 import { BackNavigationWithTitle } from './child/commonComponents.jsx';
 import FixedBottomPlayer from './child/playerComponent.jsx';
+import { useSelector, useDispatch } from 'react-redux';
+import { setQueue, setCurrentSong, setIsPlaying, fetchFinalPlayUrl } from '../reducers/player.jsx';
+
 
 
 const PlaylistViewComponent = () => {
@@ -16,6 +19,9 @@ const PlaylistViewComponent = () => {
 
     const [playListData, setPlaylistData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    
+    const queue = useSelector(state => state.player.queue);
+    const dispatch = useDispatch();
 
     // playlist variables
     // title, count, type, image, list_count
@@ -121,8 +127,22 @@ const PlaylistViewComponent = () => {
                                         </div>
 
                                         <div className='ml-auto'>
-                                            {/* play or pause button */}
-                                            <div className='p-4 bg-spotify-green rounded-full'>
+                                            {/* play button - XL */}
+                                        <div className='p-4 bg-spotify-green rounded-full'
+                                            onClick={
+                                                () => {
+                                                    if(playListData.list.length == 0) return;
+                                                    let newQueue = [...playListData.list, ...queue];
+                                                    // remove duplicates
+                                                    newQueue = Array.from(new Set(newQueue.map(JSON.stringify)), JSON.parse);
+                                                    // set queue
+                                                    dispatch(setQueue(newQueue));
+
+                                                    dispatch(setCurrentSong(playListData.list[0]));
+                                                    dispatch(fetchFinalPlayUrl(playListData.list[0].more_info?.encrypted_media_url));
+                                                    dispatch(setIsPlaying(true));
+                                                }
+                                            }>
                                                 <svg
                                                     className='w-6 h-6'
                                                     data-encore-id="icon"

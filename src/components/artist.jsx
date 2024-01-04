@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { SearchSongTile } from './child/searchTileComponent.jsx';
 import { BackNavigationWithTitle, LoadingComponent } from './child/commonComponents.jsx';
 import FixedBottomPlayer from './child/playerComponent.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFinalPlayUrl, setCurrentSong, setIsPlaying, setQueue } from '../reducers/player.jsx';
 
 const ArtistViewComponent = () => {
     const { artistId } = useParams();
@@ -12,6 +14,9 @@ const ArtistViewComponent = () => {
 
     const [artistData, setArtistData] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+
+    const queue = useSelector(state => state.player.queue);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setIsLoading(true);
@@ -107,8 +112,21 @@ const ArtistViewComponent = () => {
                                     </div>
 
                                     <div className='ml-auto'>
-                                        {/* play or pause button */}
-                                        <div className='p-4 bg-spotify-green rounded-full'>
+                                        {/* play button - XL */}
+                                        <div className='p-4 bg-spotify-green rounded-full'
+                                            onClick={
+                                                () => {
+                                                    let newQueue = [...artistData.topSongs, ...queue];
+                                                    // remove duplicates
+                                                    newQueue = Array.from(new Set(newQueue.map(JSON.stringify)), JSON.parse);
+                                                    // set queue
+                                                    dispatch(setQueue(newQueue));
+
+                                                    dispatch(setCurrentSong(artistData.topSongs[0]));
+                                                    dispatch(fetchFinalPlayUrl(artistData.topSongs[0].more_info?.encrypted_media_url));
+                                                    dispatch(setIsPlaying(true));
+                                                }
+                                            }>
                                             <svg
                                                 className='w-6 h-6'
                                                 data-encore-id="icon"

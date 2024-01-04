@@ -54,29 +54,29 @@ const FixedBottomPlayer = () => {
       if (currentSong && currentSong["isInHistory"]) {
         // check current song is in history or not by checking id
         let isSongInHistory = history.some((song) => song.id === currentSong.id);
-        if (isSongInHistory) {
-          // console.log("song is in history");
-          let currentSongIndex = history.findIndex((song) => song.id === currentSong.id);
 
-          // check next song is available in history or not
-          if (currentSongIndex < history.length - 1) {
+        // console.log("song is in history");
+        let currentSongIndex = history.findIndex((song) => song.id === currentSong.id);
+
+        // check next song is available in history or not -- except current playing song its already in history
+        if (currentSongIndex < history.length - 2 && history.length > 2) {
+          setIsNextSongAvailable(true);
+        } else {
+          // if no next song available in history then check in queue
+          if (queue.length > 0) {
             setIsNextSongAvailable(true);
           } else {
-            // if no next song available in history then check in queue
-            if (queue.length > 0) {
-              setIsNextSongAvailable(true);
-            } else {
-              setIsNextSongAvailable(false);
-            }
-          }
-
-          // check prev song is available in history or not
-          if (currentSongIndex > 0) {
-            setIsPrevSongAvailable(true);
-          } else {
-            setIsPrevSongAvailable(false);
+            setIsNextSongAvailable(false);
           }
         }
+
+        // check prev song is available in history or not
+        if (currentSongIndex > 0) {
+          setIsPrevSongAvailable(true);
+        } else {
+          setIsPrevSongAvailable(false);
+        }
+
       }
     }
 
@@ -394,7 +394,23 @@ const FixedBottomPlayer = () => {
                   </div>
                 </div>
 
-                <div className="p-3 flex justify-end text-spotify-white space-x-6">
+                <div className="p-3 flex justify-end items-center text-spotify-white space-x-6">
+                  {/* download */}
+                  {/* <div className="w-6 h-6 text-spotify-white"
+                    onClick={() => {
+                      if (playerControl.currentSong && playerControl.currentSong.playUrl) {
+                        window.open(playerControl.currentSong.playUrl, "_blank");
+                      } else {
+                        // Handle the case where playUrl is not available
+                        console.error("playUrl is not available for the current song");
+                      }
+                    }}
+
+                  >
+                    <svg enableBackground="new 0 0 32 32" id="Editable-line" version="1.1" viewBox="0 0 32 32" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="  M23.995,13.089C23.996,13.059,24,13.03,24,13c0-4.418-3.582-8-8-8c-3.814,0-6.998,2.671-7.8,6.242C5.208,12.038,3,14.757,3,18  c0,3.866,3.134,7,7,7h13c3.314,0,6-2.686,6-6C29,16.026,26.834,13.564,23.995,13.089z" fill="none" id="XMLID_126_" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" /><line fill="none" id="XMLID_132_" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" x1="16" x2="16" y1="21" y2="11" /><polyline fill="none" id="XMLID_133_" points="  12,17 16,21 20,17 " stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" /></svg>
+
+                  </div> */}
+
                   {/* queue */}
                   {/* <Link to="/queue"> */}
                   <div className="w-6 h-6 text-spotify-green"
